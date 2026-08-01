@@ -1,0 +1,35 @@
+{
+  "source_blend": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/Volcano_Hero_02_TropicalLayerBalance_R19.blend",
+  "fbx": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Assets/_Project/Art/Volcano/Hero_R19/Models/Volcano_Hero_R19.fbx",
+  "textures": {
+    "albedo": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Assets/_Project/Art/Volcano/Hero_R19/Textures/Volcano_Hero_R19_Albedo.png",
+    "normal": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Assets/_Project/Art/Volcano/Hero_R19/Textures/Volcano_Hero_R19_Normal.png",
+    "roughness": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Assets/_Project/Art/Volcano/Hero_R19/Textures/Volcano_Hero_R19_Roughness.png",
+    "ao": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Assets/_Project/Art/Volcano/Hero_R19/Textures/Volcano_Hero_R19_AO.png"
+  },
+  "texture_resolution": [
+    2048,
+    2048
+  ],
+  "object": "Volcano_Hero_02",
+  "dimensions_m": [
+    158.99517822265625,
+    145.9373779296875,
+    72.85638427734375
+  ],
+  "topology": [
+    48924,
+    97837,
+    48915
+  ],
+  "modifiers": [
+    [
+      "Sculpt_Multires_High",
+      "MULTIRES"
+    ]
+  ],
+  "source_geometry_changed": false,
+  "vertex_displacement": 0.0,
+  "unity_axis": "Y up / -Z forward",
+  "elapsed_seconds": 730.9775325419996
+}

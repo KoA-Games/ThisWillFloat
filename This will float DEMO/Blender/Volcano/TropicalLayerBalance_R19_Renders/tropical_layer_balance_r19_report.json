@@ -1,0 +1,34 @@
+{
+  "input_blend": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/Volcano_Hero_02_FinalTropicalGroundcover_R18_GreenFoothills.blend",
+  "output_blend": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/Volcano_Hero_02_TropicalLayerBalance_R19.blend",
+  "object": "Volcano_Hero_02",
+  "material": "M_Volcano_TropicalLayerBalance_R19",
+  "scope": "material masks, colors, roughness and vegetation bump only",
+  "vegetation_distribution": {
+    "upper_60_100_percent": "nearly absent; exposed rock and ash preserved",
+    "middle_35_60_percent": "rock-dominant irregular vegetation tongues",
+    "lower_0_35_percent": "vegetation-dominant broad patches with exposed soil gaps"
+  },
+  "vertex_movement_count": 0,
+  "maximum_vertex_displacement": 0.0,
+  "geometry_changed": false,
+  "topology_before": [
+    48924,
+    97837,
+    48915
+  ],
+  "topology_after": [
+    48924,
+    97837,
+    48915
+  ],
+  "topology_changed": false,
+  "modifiers_changed": false,
+  "vegetation_bump_strength": 0.085,
+  "vegetation_bump_distance": 0.007,
+  "camera_changed": false,
+  "lighting_changed": false,
+  "mapping_changed": false,
+  "configured_rendered_viewports": 10,
+  "total_seconds": 274.32465887499893
+}

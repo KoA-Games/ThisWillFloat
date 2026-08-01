@@ -1,0 +1,17 @@
+VOLCANO R20 ZONAL CONTROL FINAL AUDIT
+Shader=Shader Graphs/Volcano/Volcano_Hero_R20_ZonalControl
+ShaderSupported=True
+ShaderMessageCount=0
+ConsoleErrors=0
+ConsoleWarnings=15
+ConsoleLogs=0
+AllPropertiesPresent=True
+AllTextureSlotsAssigned=True
+SourceAndZonalMeshMatch=True
+SourceAndZonalColliderMatch=True
+RootPositionMatch=True
+RootRotationMatch=True
+RootScaleMatch=True
+RendererMaterial=Assets/_Project/Art/Volcano/Hero_R20/Materials/Volcano_Hero_R20_ZonalControl_URP.mat
+DirtySceneCount=0
+RecommendedDefaults=True

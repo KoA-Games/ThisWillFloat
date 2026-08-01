@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1380" height="1180" viewBox="0 0 1380 1180">
+ <style>.bg{fill:#171a1f}.panel{fill:#252a31;stroke:#4a5663;stroke-width:2}.h{font:700 30px -apple-system,sans-serif;fill:#fff}.s{font:500 15px ui-monospace,monospace;fill:#dbe4eb}.l{font:600 16px -apple-system,sans-serif;fill:#9fabb5}.ok{fill:#83d59f}.line{stroke:#3c4651;stroke-width:1}</style>
+ <rect width="1380" height="1180" class="bg"/><text x="45" y="60" class="h">Volcano_Hero_R20_ZonalControl_URP — Material Inspector Diagnostic</text>
+ <rect x="45" y="92" width="1290" height="1038" rx="12" class="panel"/>
+ <text x="74" y="135" class="l">Shader</text><text x="320" y="135" class="s">Shader Graphs/Volcano/Volcano_Hero_R20_ZonalControl</text>
+ <line x1="70" y1="158" x2="1310" y2="158" class="line"/>
+ <text x="74" y="198" class="l">TEXTURES</text>
+ <text x="90" y="237" class="s">_BaseMap</text><text x="320" y="237" class="s">Hero_R20/Textures/Volcano_Hero_R20_Albedo.png</text>
+ <text x="90" y="274" class="s">_ControlRGBA</text><text x="320" y="274" class="s">Hero_R20/Textures/Volcano_Hero_R20_ControlRGBA.png  (linear, alpha retained)</text>
+ <text x="90" y="311" class="s">_NormalMap</text><text x="320" y="311" class="s">Hero_R19/Textures/Volcano_Hero_R19_Normal.png</text>
+ <text x="90" y="348" class="s">_AOMap</text><text x="320" y="348" class="s">Hero_R19/Textures/Volcano_Hero_R19_AO.png</text>
+ <text x="90" y="385" class="s">_MetallicSmoothnessMap</text><text x="320" y="385" class="s">Hero_R19/Textures/Volcano_Hero_R19_MetallicSmoothness.png</text>
+ <line x1="70" y1="410" x2="1310" y2="410" class="line"/>
+ <text x="74" y="450" class="l">ZONE COLORS</text>
+ <rect x="90" y="475" width="34" height="24" fill="#4c4941"/><text x="145" y="495" class="s">_RockAshColor  (0.300, 0.285, 0.255)</text>
+ <rect x="90" y="516" width="34" height="24" fill="#33411d"/><text x="145" y="536" class="s">_VegetationColor  (0.200, 0.255, 0.115)</text>
+ <rect x="90" y="557" width="34" height="24" fill="#504134"/><text x="145" y="577" class="s">_SoilColor  (0.315, 0.255, 0.205)</text>
+ <rect x="90" y="598" width="34" height="24" fill="#161819"/><text x="145" y="618" class="s">_SummitColor  (0.085, 0.095, 0.098)</text>
+ <line x1="70" y1="646" x2="1310" y2="646" class="line"/>
+ <text x="74" y="686" class="l">WEIGHTS / RECONSTRUCTION</text>
+ <text x="90" y="726" class="s">_RockAshWeight          1.00</text><text x="540" y="726" class="s">_RecolorStrength          0.70</text>
+ <text x="90" y="763" class="s">_VegetationWeight        0.72</text><text x="540" y="763" class="s">_DetailStrength           0.55</text>
+ <text x="90" y="800" class="s">_SoilWeight              0.85</text><text x="540" y="800" class="s">_DetailContrast           1.00</text>
+ <text x="90" y="837" class="s">_SummitWeight            1.15</text>
+ <line x1="70" y1="864" x2="1310" y2="864" class="line"/>
+ <text x="74" y="904" class="l">SURFACE RESPONSE</text>
+ <text x="90" y="944" class="s">_NormalStrength          1.00</text>
+ <text x="90" y="981" class="s">_AOIntensity             1.00</text>
+ <text x="90" y="1018" class="s">_SmoothnessMultiplier    1.00</text>
+ <text x="90" y="1082" class="s ok">✓ All exposed properties serialized and all texture slots assigned</text>
+</svg>

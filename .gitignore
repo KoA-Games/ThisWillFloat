@@ -1,0 +1,53 @@
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# Unity generated files
+*.csproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity cache and crash reports
+sysinfo.txt
+*.stackdump
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE folders
+.idea/
+.vscode/
+
+# Asset store tools
+[Aa]ssets/AssetStoreTools*
+
+# Addressables
+[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+
+# Builds and packaged output
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# Local iteration artifacts (not required to open or run the demo)
+This will float DEMO/*Captures/
+This will float DEMO/RollbackArchive/
+This will float DEMO/CraterRollbackVerification/
+This will float DEMO/Assets/_Project/Scenes/Backups/

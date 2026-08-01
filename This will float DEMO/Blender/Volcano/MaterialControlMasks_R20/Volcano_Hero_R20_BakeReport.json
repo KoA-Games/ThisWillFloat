@@ -1,0 +1,73 @@
+{
+  "pass": "VOLCANO R20 — BAKE SEPARATE MATERIAL CONTROL MASKS",
+  "input_blend": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/Volcano_Hero_02_TropicalLayerBalance_R19.blend",
+  "output_blend": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/Volcano_Hero_02_MaterialControlMasks_R20.blend",
+  "source_r19_sha256_before": "01f4915b07a97c30b967b7b69faa5af50551985c98611543cc2d31cf2921b188",
+  "source_r19_sha256_after": "01f4915b07a97c30b967b7b69faa5af50551985c98611543cc2d31cf2921b188",
+  "source_r19_unchanged": true,
+  "object": "Volcano_Hero_02",
+  "material": "M_Volcano_MaterialControl_R20",
+  "texture_resolution": [
+    2048,
+    2048
+  ],
+  "uv_set": "Volcano_MacroRelief_Step3A_UV",
+  "outputs": {
+    "control_rgba": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/MaterialControlMasks_R20/Textures/Volcano_Hero_R20_ControlRGBA.png",
+    "control_rgba_rgb_preview": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/MaterialControlMasks_R20/Diagnostics/03_ControlRGBA_RGBPreview.png",
+    "albedo": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/MaterialControlMasks_R20/Textures/Volcano_Hero_R20_Albedo.png",
+    "current_r19_albedo_reference": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/MaterialControlMasks_R20/Diagnostics/01_Current_R19_Albedo.png",
+    "channels": {
+      "R_RockAsh": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/MaterialControlMasks_R20/Diagnostics/R20_Channel_R_RockAsh.png",
+      "G_Vegetation": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/MaterialControlMasks_R20/Diagnostics/R20_Channel_G_Vegetation.png",
+      "B_Soil": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/MaterialControlMasks_R20/Diagnostics/R20_Channel_B_Soil.png",
+      "A_Summit": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/MaterialControlMasks_R20/Diagnostics/R20_Channel_A_Summit.png"
+    },
+    "renders": [
+      "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/MaterialControlMasks_R20/Renders/R20_01_front.png",
+      "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/MaterialControlMasks_R20/Renders/R20_02_left.png",
+      "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/MaterialControlMasks_R20/Renders/R20_03_right.png",
+      "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/MaterialControlMasks_R20/Renders/R20_04_top45.png",
+      "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/MaterialControlMasks_R20/Renders/R20_05_direct_top.png"
+    ]
+  },
+  "channel_assignment": {
+    "R": "Upper exposed rock and ash",
+    "G": "Vegetation ground",
+    "B": "Bare soil / ochre / exposed earth",
+    "A": "Dark summit and crater"
+  },
+  "approx_mean_surface_control_percent": {
+    "R_rock_ash": 48.59,
+    "G_vegetation": 32.181,
+    "B_soil": 8.634,
+    "A_summit": 10.595
+  },
+  "approx_dominant_surface_percent": {
+    "R_rock_ash": 52.223,
+    "G_vegetation": 36.764,
+    "B_soil": 0.673,
+    "A_summit": 10.34
+  },
+  "geometry_validation": {
+    "vertex_count": 48924,
+    "moved_vertex_count": 0,
+    "maximum_vertex_displacement": 0.0,
+    "mesh_hash_unchanged": true,
+    "topology_unchanged": true,
+    "modifiers_unchanged": true,
+    "uv_unchanged": true,
+    "transforms_unchanged": true,
+    "cameras_lights_unchanged": true
+  },
+  "existing_maps_rebaked": {
+    "R19_Normal": false,
+    "R19_AO": false,
+    "R19_Roughness": false,
+    "R19_MetallicSmoothness": false
+  },
+  "fbx_exported": false,
+  "unity_modified": false,
+  "blender_errors": [],
+  "elapsed_seconds": 157.36810470899218
+}

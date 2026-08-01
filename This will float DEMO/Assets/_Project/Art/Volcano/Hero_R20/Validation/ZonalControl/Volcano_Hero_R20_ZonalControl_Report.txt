@@ -1,0 +1,24 @@
+VOLCANO R20 ZONAL CONTROL BUILD REPORT
+Shader Graph: Assets/_Project/Art/Volcano/Hero_R20/Shaders/Volcano_Hero_R20_ZonalControl.shadergraph
+Shader: Shader Graphs/Volcano/Volcano_Hero_R20_ZonalControl
+Material: Assets/_Project/Art/Volcano/Hero_R20/Materials/Volcano_Hero_R20_ZonalControl_URP.mat
+Prefab: Assets/_Project/Art/Volcano/Hero_R20/Prefabs/Volcano_Hero_R20_ZonalControl_Test.prefab
+Source prefab unchanged: Assets/_Project/Art/Volcano/Hero_R20/Prefabs/Volcano_Hero_R20_Test.prefab
+Scene dirty states preserved: True
+Material shader supported: True
+Control semantics: R=Rock/Ash, G=Vegetation, B=Soil, A=Summit/Crater
+Property references: _BaseMap, _NormalMap, _AOMap, _MetallicSmoothnessMap, _ControlRGBA, _RockAshColor, _VegetationColor, _SoilColor, _SummitColor, _RockAshWeight, _VegetationWeight, _SoilWeight, _SummitWeight, _RecolorStrength, _DetailStrength, _DetailContrast, _NormalStrength, _AOIntensity, _SmoothnessMultiplier
+BaseMap: Assets/_Project/Art/Volcano/Hero_R20/Textures/Volcano_Hero_R20_Albedo.png
+ControlRGBA: Assets/_Project/Art/Volcano/Hero_R20/Textures/Volcano_Hero_R20_ControlRGBA.png
+NormalMap: Assets/_Project/Art/Volcano/Hero_R19/Textures/Volcano_Hero_R19_Normal.png
+AOMap: Assets/_Project/Art/Volcano/Hero_R19/Textures/Volcano_Hero_R19_AO.png
+MetallicSmoothnessMap: Assets/_Project/Art/Volcano/Hero_R19/Textures/Volcano_Hero_R19_MetallicSmoothness.png
+Defaults: RockAshWeight=1.00, VegetationWeight=0.72, SoilWeight=0.85, SummitWeight=1.15
+Defaults: RecolorStrength=0.70, DetailStrength=0.55, DetailContrast=1.00
+Defaults: NormalStrength=1.00, AOIntensity=1.00, SmoothnessMultiplier=1.00
+Prefab renderer count: 1
+Prefab collider count: 1
+Material left at recommended defaults: True
+Preview A: Assets/_Project/Art/Volcano/Hero_R20/Validation/ZonalControl/Preview_A_OriginalLike.png
+Preview B: Assets/_Project/Art/Volcano/Hero_R20/Validation/ZonalControl/Preview_B_Recommended.png
+Preview C: Assets/_Project/Art/Volcano/Hero_R20/Validation/ZonalControl/Preview_C_ReducedVegetation.png
