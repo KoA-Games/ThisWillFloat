@@ -1,0 +1,63 @@
+{
+  "pass": "R70 independent color-zone transition refinement verification",
+  "status": "PASS",
+  "errors": [],
+  "volcano_mesh_unchanged": true,
+  "volcano_materials_unchanged": true,
+  "r69_placement_count": 1668,
+  "r69_transform_data_fingerprint_preserved": true,
+  "r70_added_object_count": 430,
+  "source_role_counts": {
+    "SMALL_TREE": 61,
+    "BUSH": 133,
+    "LOW": 228,
+    "MEDIUM_TREE": 8
+  },
+  "material_zone_counts": {
+    "GREEN": 391,
+    "SOIL": 39
+  },
+  "transition_band_counts": {
+    "LOWER_GREEN": 208,
+    "MID_GREEN": 161,
+    "SOIL_LIGHT": 32,
+    "UPPER_LOW_ONLY": 29
+  },
+  "satellite_patch_count": 37,
+  "rock_additions": 0,
+  "surface_zone_mismatches": 0,
+  "soil_trees": 0,
+  "upper_transition_trees": 0,
+  "overly_tall_trees": 0,
+  "floating_additions": 0,
+  "buried_additions": 0,
+  "render_dimensions": {
+    "01_front_water_level.png": [
+      1600,
+      900
+    ],
+    "02_three_quarter_overview.png": [
+      1600,
+      900
+    ],
+    "03_opposite_side_overview.png": [
+      1600,
+      900
+    ],
+    "04_gameplay_distance.png": [
+      1600,
+      900
+    ],
+    "05_top_down_distribution.png": [
+      1600,
+      900
+    ]
+  },
+  "render_sha256": {
+    "01_front_water_level.png": "552c88287655a52e20e6cfabdc448ad1cda173e4ab1bdadbf406a8a6da6554c6",
+    "02_three_quarter_overview.png": "266539f2c88d93ec235b32c6b04009d27643d137a676b66e258a9778fbc92353",
+    "03_opposite_side_overview.png": "351af57a97f1121c51389c1bacb8b0919680c16c4f60d448374ac3c4f9031d7b",
+    "04_gameplay_distance.png": "32f7d9d503947c1f7f1b3323dcea3e0d058fdbe32f6e864efb703b19251a4cb3",
+    "05_top_down_distribution.png": "194a31486cea4c46d0f65d5ccccf2efb724a1c403308a467b9037f93343ed4bd"
+  }
+}
