@@ -5,7 +5,16 @@ asset kits used to build its tropical vegetation.
 
 ## Open the approved scene
 
-Open:
+For the easiest review experience, open:
+
+`Volcano/Volcano_Hero_02_ColorZoneTransitionRefinement_R70_ReviewReady.blend`
+
+This version starts at frame 1 with the approved three-quarter camera restored.
+Its Layout workspace is already in camera view, and the pixel-identical approved
+image is packed as `R70_APPROVED_THREE_QUARTER`. Open the Rendering workspace to
+view that packed reference, or press F12 to render the live scene.
+
+The original portable working file remains available at:
 
 `Volcano/Volcano_Hero_02_ColorZoneTransitionRefinement_R70_Portable.blend`
 
@@ -56,4 +65,6 @@ After cloning or pulling on another computer, run:
 git lfs pull
 ```
 
-Then open the portable R70 Blender file above.
+Then open the ReviewReady R70 Blender file above. A normal viewport preview can
+look brighter and flatter than the final output; use the Rendering workspace or
+F12 when judging the approved look.
