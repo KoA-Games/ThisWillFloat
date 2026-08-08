@@ -1,0 +1,897 @@
+{
+  "pass": "R70 COLOR-ZONE GAP FILL AND NATURAL TRANSITION REFINEMENT",
+  "input_blend": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/Volcano_Hero_02_ColorZoneClusterPlacement_R69.blend",
+  "output_blend": "/Users/saehajung/Documents/This will float/ThisWillFloat/This will float DEMO/Blender/Volcano/Volcano_Hero_02_ColorZoneTransitionRefinement_R70.blend",
+  "preserved_distribution_collection": "R69_COLOR_ZONE_CLUSTER_PLACEMENT",
+  "new_refinement_collection": "R70_GAP_FILL_TRANSITION_REFINEMENT",
+  "strategy": {
+    "existing_large_scale_distribution": "preserved unchanged",
+    "lower_green": "small trees, restrained medium trees, bushes, and low vegetation in irregular edge/gap satellites",
+    "mid_green": "smaller trees and shrub/low transitions; reduced height and density",
+    "soil": "lighter bushes and low vegetation only; no added trees",
+    "upper_transition": "sparse low vegetation only",
+    "rock": "hard exclusion",
+    "intentional_openings": "five curved terrain/drainage channels preserved",
+    "excluded_tree_sources": [
+      "TREE_A",
+      "TREE_B",
+      "TREE_F"
+    ]
+  },
+  "candidate_count": 2668,
+  "selected_satellite_patch_count": 37,
+  "patch_summaries": [
+    {
+      "patch_id": 1,
+      "band": "LOWER_GREEN",
+      "center": [
+        23.417,
+        -59.74,
+        5.273
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.0683,
+      "nearest_existing_vegetation_m": 5.771,
+      "nearest_existing_tree_m": 5.785,
+      "objects_placed": 14,
+      "source_role_counts": {
+        "SMALL_TREE": 2,
+        "BUSH": 6,
+        "LOW": 6
+      },
+      "rejected": {
+        "LOCAL_SPACING": 6
+      }
+    },
+    {
+      "patch_id": 2,
+      "band": "LOWER_GREEN",
+      "center": [
+        12.201,
+        -72.085,
+        0.488
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.0026,
+      "nearest_existing_vegetation_m": 5.554,
+      "nearest_existing_tree_m": 5.753,
+      "objects_placed": 18,
+      "source_role_counts": {
+        "SMALL_TREE": 3,
+        "MEDIUM_TREE": 1,
+        "BUSH": 6,
+        "LOW": 8
+      },
+      "rejected": {
+        "LOCAL_SPACING": 35,
+        "SURFACE_OR_CHANNEL": 35
+      }
+    },
+    {
+      "patch_id": 3,
+      "band": "LOWER_GREEN",
+      "center": [
+        35.498,
+        -57.679,
+        1.014
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.0098,
+      "nearest_existing_vegetation_m": 5.978,
+      "nearest_existing_tree_m": 6.138,
+      "objects_placed": 15,
+      "source_role_counts": {
+        "SMALL_TREE": 3,
+        "MEDIUM_TREE": 1,
+        "BUSH": 4,
+        "LOW": 7
+      },
+      "rejected": {
+        "LOCAL_SPACING": 7,
+        "SURFACE_OR_CHANNEL": 2
+      }
+    },
+    {
+      "patch_id": 4,
+      "band": "LOWER_GREEN",
+      "center": [
+        -13.894,
+        -63.044,
+        1.738
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.0197,
+      "nearest_existing_vegetation_m": 6.791,
+      "nearest_existing_tree_m": 6.916,
+      "objects_placed": 17,
+      "source_role_counts": {
+        "SMALL_TREE": 3,
+        "BUSH": 6,
+        "LOW": 8
+      },
+      "rejected": {
+        "LOCAL_SPACING": 2
+      }
+    },
+    {
+      "patch_id": 5,
+      "band": "LOWER_GREEN",
+      "center": [
+        -33.345,
+        -55.636,
+        3.755
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.0474,
+      "nearest_existing_vegetation_m": 6.043,
+      "nearest_existing_tree_m": 6.206,
+      "objects_placed": 13,
+      "source_role_counts": {
+        "SMALL_TREE": 2,
+        "BUSH": 5,
+        "LOW": 6
+      },
+      "rejected": {
+        "LOCAL_SPACING": 5
+      }
+    },
+    {
+      "patch_id": 6,
+      "band": "LOWER_GREEN",
+      "center": [
+        42.109,
+        -50.354,
+        1.218
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.0126,
+      "nearest_existing_vegetation_m": 6.133,
+      "nearest_existing_tree_m": 6.273,
+      "objects_placed": 14,
+      "source_role_counts": {
+        "SMALL_TREE": 3,
+        "BUSH": 4,
+        "LOW": 7
+      },
+      "rejected": {
+        "LOCAL_SPACING": 4,
+        "SURFACE_OR_CHANNEL": 6
+      }
+    },
+    {
+      "patch_id": 7,
+      "band": "LOWER_GREEN",
+      "center": [
+        -42.56,
+        -48.353,
+        6.297
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.0823,
+      "nearest_existing_vegetation_m": 6.191,
+      "nearest_existing_tree_m": 6.272,
+      "objects_placed": 14,
+      "source_role_counts": {
+        "SMALL_TREE": 2,
+        "BUSH": 5,
+        "LOW": 7
+      },
+      "rejected": {}
+    },
+    {
+      "patch_id": 8,
+      "band": "LOWER_GREEN",
+      "center": [
+        -41.957,
+        -39.048,
+        10.612
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.1415,
+      "nearest_existing_vegetation_m": 5.73,
+      "nearest_existing_tree_m": 5.791,
+      "objects_placed": 15,
+      "source_role_counts": {
+        "SMALL_TREE": 4,
+        "BUSH": 4,
+        "LOW": 7
+      },
+      "rejected": {
+        "LOCAL_SPACING": 6
+      }
+    },
+    {
+      "patch_id": 9,
+      "band": "LOWER_GREEN",
+      "center": [
+        1.938,
+        -71.75,
+        0.57
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.0037,
+      "nearest_existing_vegetation_m": 5.52,
+      "nearest_existing_tree_m": 5.667,
+      "objects_placed": 14,
+      "source_role_counts": {
+        "SMALL_TREE": 4,
+        "BUSH": 4,
+        "LOW": 6
+      },
+      "rejected": {
+        "LOCAL_SPACING": 8,
+        "SURFACE_OR_CHANNEL": 25
+      }
+    },
+    {
+      "patch_id": 10,
+      "band": "LOWER_GREEN",
+      "center": [
+        -23.465,
+        -59.904,
+        1.714
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.0194,
+      "nearest_existing_vegetation_m": 6.099,
+      "nearest_existing_tree_m": 6.282,
+      "objects_placed": 13,
+      "source_role_counts": {
+        "SMALL_TREE": 2,
+        "BUSH": 5,
+        "LOW": 6
+      },
+      "rejected": {
+        "LOCAL_SPACING": 2
+      }
+    },
+    {
+      "patch_id": 11,
+      "band": "LOWER_GREEN",
+      "center": [
+        54.177,
+        -36.592,
+        1.948
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.0226,
+      "nearest_existing_vegetation_m": 6.51,
+      "nearest_existing_tree_m": 6.536,
+      "objects_placed": 17,
+      "source_role_counts": {
+        "SMALL_TREE": 4,
+        "BUSH": 5,
+        "LOW": 8
+      },
+      "rejected": {
+        "LOCAL_SPACING": 10,
+        "SURFACE_OR_CHANNEL": 3
+      }
+    },
+    {
+      "patch_id": 12,
+      "band": "LOWER_GREEN",
+      "center": [
+        -56.502,
+        -41.592,
+        2.306
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.0275,
+      "nearest_existing_vegetation_m": 5.324,
+      "nearest_existing_tree_m": 5.449,
+      "objects_placed": 16,
+      "source_role_counts": {
+        "SMALL_TREE": 2,
+        "MEDIUM_TREE": 1,
+        "BUSH": 6,
+        "LOW": 7
+      },
+      "rejected": {
+        "LOCAL_SPACING": 7
+      }
+    },
+    {
+      "patch_id": 13,
+      "band": "LOWER_GREEN",
+      "center": [
+        -63.586,
+        -27.437,
+        1.486
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.0163,
+      "nearest_existing_vegetation_m": 6.081,
+      "nearest_existing_tree_m": 6.211,
+      "objects_placed": 14,
+      "source_role_counts": {
+        "SMALL_TREE": 2,
+        "BUSH": 5,
+        "LOW": 7
+      },
+      "rejected": {
+        "LOCAL_SPACING": 2,
+        "SURFACE_OR_CHANNEL": 1
+      }
+    },
+    {
+      "patch_id": 14,
+      "band": "LOWER_GREEN",
+      "center": [
+        49.413,
+        -46.029,
+        0.352
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.0007,
+      "nearest_existing_vegetation_m": 7.507,
+      "nearest_existing_tree_m": 7.612,
+      "objects_placed": 14,
+      "source_role_counts": {
+        "SMALL_TREE": 3,
+        "BUSH": 4,
+        "LOW": 7
+      },
+      "rejected": {
+        "LOCAL_SPACING": 16,
+        "SURFACE_OR_CHANNEL": 20
+      }
+    },
+    {
+      "patch_id": 15,
+      "band": "MID_GREEN",
+      "center": [
+        52.109,
+        -1.824,
+        16.668
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.2247,
+      "nearest_existing_vegetation_m": 4.902,
+      "nearest_existing_tree_m": 5.572,
+      "objects_placed": 11,
+      "source_role_counts": {
+        "SMALL_TREE": 1,
+        "BUSH": 3,
+        "LOW": 7
+      },
+      "rejected": {}
+    },
+    {
+      "patch_id": 16,
+      "band": "MID_GREEN",
+      "center": [
+        -40.228,
+        -20.553,
+        15.819
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.213,
+      "nearest_existing_vegetation_m": 4.802,
+      "nearest_existing_tree_m": 4.802,
+      "objects_placed": 12,
+      "source_role_counts": {
+        "SMALL_TREE": 1,
+        "BUSH": 5,
+        "LOW": 6
+      },
+      "rejected": {
+        "LOCAL_SPACING": 3,
+        "SURFACE_OR_CHANNEL": 5
+      }
+    },
+    {
+      "patch_id": 17,
+      "band": "MID_GREEN",
+      "center": [
+        -27.915,
+        39.065,
+        18.168
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.2452,
+      "nearest_existing_vegetation_m": 5.294,
+      "nearest_existing_tree_m": 8.853,
+      "objects_placed": 13,
+      "source_role_counts": {
+        "SMALL_TREE": 2,
+        "MEDIUM_TREE": 1,
+        "BUSH": 3,
+        "LOW": 7
+      },
+      "rejected": {
+        "LOCAL_SPACING": 4,
+        "SURFACE_OR_CHANNEL": 6,
+        "TREE_ZONE_HEIGHT_SLOPE": 3
+      }
+    },
+    {
+      "patch_id": 18,
+      "band": "MID_GREEN",
+      "center": [
+        -49.705,
+        -8.033,
+        18.019
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.2432,
+      "nearest_existing_vegetation_m": 5.512,
+      "nearest_existing_tree_m": 5.512,
+      "objects_placed": 15,
+      "source_role_counts": {
+        "SMALL_TREE": 2,
+        "MEDIUM_TREE": 1,
+        "BUSH": 5,
+        "LOW": 7
+      },
+      "rejected": {
+        "LOCAL_SPACING": 3
+      }
+    },
+    {
+      "patch_id": 19,
+      "band": "MID_GREEN",
+      "center": [
+        -14.218,
+        40.486,
+        16.898
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.2278,
+      "nearest_existing_vegetation_m": 5.207,
+      "nearest_existing_tree_m": 5.207,
+      "objects_placed": 11,
+      "source_role_counts": {
+        "SMALL_TREE": 1,
+        "BUSH": 3,
+        "LOW": 7
+      },
+      "rejected": {
+        "LOCAL_SPACING": 1,
+        "TREE_ZONE_HEIGHT_SLOPE": 1
+      }
+    },
+    {
+      "patch_id": 20,
+      "band": "MID_GREEN",
+      "center": [
+        40.028,
+        0.47,
+        26.454
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.359,
+      "nearest_existing_vegetation_m": 5.105,
+      "nearest_existing_tree_m": 5.105,
+      "objects_placed": 11,
+      "source_role_counts": {
+        "SMALL_TREE": 2,
+        "BUSH": 3,
+        "LOW": 6
+      },
+      "rejected": {
+        "LOCAL_SPACING": 11,
+        "SURFACE_OR_CHANNEL": 6,
+        "TREE_ZONE_HEIGHT_SLOPE": 19
+      }
+    },
+    {
+      "patch_id": 21,
+      "band": "MID_GREEN",
+      "center": [
+        52.26,
+        26.448,
+        15.369
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.2068,
+      "nearest_existing_vegetation_m": 5.682,
+      "nearest_existing_tree_m": 6.197,
+      "objects_placed": 15,
+      "source_role_counts": {
+        "SMALL_TREE": 2,
+        "BUSH": 5,
+        "LOW": 8
+      },
+      "rejected": {
+        "LOCAL_SPACING": 8
+      }
+    },
+    {
+      "patch_id": 22,
+      "band": "MID_GREEN",
+      "center": [
+        18.819,
+        52.16,
+        15.589
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.2098,
+      "nearest_existing_vegetation_m": 5.29,
+      "nearest_existing_tree_m": 5.359,
+      "objects_placed": 14,
+      "source_role_counts": {
+        "SMALL_TREE": 1,
+        "MEDIUM_TREE": 1,
+        "BUSH": 5,
+        "LOW": 7
+      },
+      "rejected": {
+        "LOCAL_SPACING": 8
+      }
+    },
+    {
+      "patch_id": 23,
+      "band": "MID_GREEN",
+      "center": [
+        30.394,
+        31.912,
+        17.899
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.2416,
+      "nearest_existing_vegetation_m": 4.854,
+      "nearest_existing_tree_m": 5.238,
+      "objects_placed": 12,
+      "source_role_counts": {
+        "SMALL_TREE": 1,
+        "BUSH": 3,
+        "LOW": 8
+      },
+      "rejected": {
+        "LOCAL_SPACING": 5,
+        "SURFACE_OR_CHANNEL": 1
+      }
+    },
+    {
+      "patch_id": 24,
+      "band": "MID_GREEN",
+      "center": [
+        -54.352,
+        17.262,
+        15.468
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.2082,
+      "nearest_existing_vegetation_m": 5.665,
+      "nearest_existing_tree_m": 5.753,
+      "objects_placed": 15,
+      "source_role_counts": {
+        "SMALL_TREE": 3,
+        "MEDIUM_TREE": 1,
+        "BUSH": 4,
+        "LOW": 7
+      },
+      "rejected": {
+        "LOCAL_SPACING": 6
+      }
+    },
+    {
+      "patch_id": 25,
+      "band": "MID_GREEN",
+      "center": [
+        54.221,
+        13.166,
+        15.672
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.211,
+      "nearest_existing_vegetation_m": 5.993,
+      "nearest_existing_tree_m": 6.164,
+      "objects_placed": 17,
+      "source_role_counts": {
+        "SMALL_TREE": 3,
+        "MEDIUM_TREE": 1,
+        "BUSH": 5,
+        "LOW": 8
+      },
+      "rejected": {
+        "LOCAL_SPACING": 1
+      }
+    },
+    {
+      "patch_id": 26,
+      "band": "MID_GREEN",
+      "center": [
+        -2.485,
+        41.002,
+        22.121
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.2995,
+      "nearest_existing_vegetation_m": 5.359,
+      "nearest_existing_tree_m": 5.688,
+      "objects_placed": 15,
+      "source_role_counts": {
+        "SMALL_TREE": 3,
+        "BUSH": 4,
+        "LOW": 8
+      },
+      "rejected": {
+        "LOCAL_SPACING": 14,
+        "SURFACE_OR_CHANNEL": 16,
+        "TREE_ZONE_HEIGHT_SLOPE": 3
+      }
+    },
+    {
+      "patch_id": 27,
+      "band": "SOIL_LIGHT",
+      "center": [
+        -37.606,
+        19.632,
+        23.768
+      ],
+      "center_zone": "SOIL",
+      "center_height": 0.3221,
+      "nearest_existing_vegetation_m": 4.834,
+      "nearest_existing_tree_m": 4.976,
+      "objects_placed": 6,
+      "source_role_counts": {
+        "BUSH": 2,
+        "LOW": 4
+      },
+      "rejected": {
+        "LOCAL_SPACING": 2
+      }
+    },
+    {
+      "patch_id": 28,
+      "band": "SOIL_LIGHT",
+      "center": [
+        -28.019,
+        22.536,
+        29.409
+      ],
+      "center_zone": "SOIL",
+      "center_height": 0.3995,
+      "nearest_existing_vegetation_m": 4.823,
+      "nearest_existing_tree_m": 12.535,
+      "objects_placed": 6,
+      "source_role_counts": {
+        "BUSH": 1,
+        "LOW": 5
+      },
+      "rejected": {
+        "LOW_ZONE_HEIGHT_SLOPE": 2
+      }
+    },
+    {
+      "patch_id": 29,
+      "band": "SOIL_LIGHT",
+      "center": [
+        16.397,
+        -29.582,
+        30.636
+      ],
+      "center_zone": "SOIL",
+      "center_height": 0.4164,
+      "nearest_existing_vegetation_m": 5.829,
+      "nearest_existing_tree_m": 10.184,
+      "objects_placed": 4,
+      "source_role_counts": {
+        "BUSH": 1,
+        "LOW": 3
+      },
+      "rejected": {}
+    },
+    {
+      "patch_id": 30,
+      "band": "SOIL_LIGHT",
+      "center": [
+        -7.385,
+        -34.55,
+        28.362
+      ],
+      "center_zone": "SOIL",
+      "center_height": 0.3852,
+      "nearest_existing_vegetation_m": 5.243,
+      "nearest_existing_tree_m": 5.243,
+      "objects_placed": 4,
+      "source_role_counts": {
+        "BUSH": 1,
+        "LOW": 3
+      },
+      "rejected": {
+        "SOIL_PATCH_CROSSING": 1,
+        "SURFACE_OR_CHANNEL": 3
+      }
+    },
+    {
+      "patch_id": 31,
+      "band": "SOIL_LIGHT",
+      "center": [
+        -32.906,
+        -27.491,
+        24.63
+      ],
+      "center_zone": "SOIL",
+      "center_height": 0.3339,
+      "nearest_existing_vegetation_m": 3.182,
+      "nearest_existing_tree_m": 5.088,
+      "objects_placed": 6,
+      "source_role_counts": {
+        "BUSH": 1,
+        "LOW": 5
+      },
+      "rejected": {}
+    },
+    {
+      "patch_id": 32,
+      "band": "SOIL_LIGHT",
+      "center": [
+        -44.831,
+        12.909,
+        25.116
+      ],
+      "center_zone": "SOIL",
+      "center_height": 0.3406,
+      "nearest_existing_vegetation_m": 3.291,
+      "nearest_existing_tree_m": 3.754,
+      "objects_placed": 6,
+      "source_role_counts": {
+        "BUSH": 1,
+        "LOW": 5
+      },
+      "rejected": {
+        "SOIL_PATCH_CROSSING": 1,
+        "SURFACE_OR_CHANNEL": 4
+      }
+    },
+    {
+      "patch_id": 33,
+      "band": "UPPER_LOW_ONLY",
+      "center": [
+        30.759,
+        -17.453,
+        29.21
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.3968,
+      "nearest_existing_vegetation_m": 4.139,
+      "nearest_existing_tree_m": 4.723,
+      "objects_placed": 6,
+      "source_role_counts": {
+        "BUSH": 2,
+        "LOW": 4
+      },
+      "rejected": {
+        "LOCAL_SPACING": 1,
+        "LOW_ZONE_HEIGHT_SLOPE": 1
+      }
+    },
+    {
+      "patch_id": 34,
+      "band": "UPPER_LOW_ONLY",
+      "center": [
+        40.366,
+        15.559,
+        28.693
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.3897,
+      "nearest_existing_vegetation_m": 4.544,
+      "nearest_existing_tree_m": 4.544,
+      "objects_placed": 6,
+      "source_role_counts": {
+        "BUSH": 1,
+        "LOW": 5
+      },
+      "rejected": {
+        "LOCAL_SPACING": 1
+      }
+    },
+    {
+      "patch_id": 35,
+      "band": "UPPER_LOW_ONLY",
+      "center": [
+        9.351,
+        40.665,
+        28.935
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.393,
+      "nearest_existing_vegetation_m": 3.832,
+      "nearest_existing_tree_m": 5.799,
+      "objects_placed": 6,
+      "source_role_counts": {
+        "BUSH": 2,
+        "LOW": 4
+      },
+      "rejected": {
+        "SURFACE_OR_CHANNEL": 1
+      }
+    },
+    {
+      "patch_id": 36,
+      "band": "UPPER_LOW_ONLY",
+      "center": [
+        19.407,
+        27.047,
+        33.234
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.452,
+      "nearest_existing_vegetation_m": 4.212,
+      "nearest_existing_tree_m": 5.485,
+      "objects_placed": 5,
+      "source_role_counts": {
+        "BUSH": 2,
+        "LOW": 3
+      },
+      "rejected": {
+        "LOW_ZONE_HEIGHT_SLOPE": 6
+      }
+    },
+    {
+      "patch_id": 37,
+      "band": "UPPER_LOW_ONLY",
+      "center": [
+        -18.391,
+        -29.407,
+        29.11
+      ],
+      "center_zone": "GREEN",
+      "center_height": 0.3954,
+      "nearest_existing_vegetation_m": 3.992,
+      "nearest_existing_tree_m": 5.569,
+      "objects_placed": 6,
+      "source_role_counts": {
+        "BUSH": 2,
+        "LOW": 4
+      },
+      "rejected": {
+        "LOCAL_SPACING": 2,
+        "LOW_ZONE_HEIGHT_SLOPE": 1
+      }
+    }
+  ],
+  "validation": {
+    "status": "PASS",
+    "errors": [],
+    "added_object_count": 430,
+    "source_role_counts": {
+      "BUSH": 133,
+      "LOW": 228,
+      "MEDIUM_TREE": 8,
+      "SMALL_TREE": 61
+    },
+    "material_zone_counts": {
+      "GREEN": 391,
+      "SOIL": 39
+    },
+    "transition_band_counts": {
+      "LOWER_GREEN": 208,
+      "MID_GREEN": 161,
+      "SOIL_LIGHT": 32,
+      "UPPER_LOW_ONLY": 29
+    },
+    "tree_counts_by_transition_band": {
+      "LOWER_GREEN": 42,
+      "MID_GREEN": 27
+    },
+    "satellite_patch_counts": {
+      "LOWER_GREEN": 14,
+      "MID_GREEN": 12,
+      "SOIL_LIGHT": 6,
+      "UPPER_LOW_ONLY": 5
+    },
+    "rock_addition_count": 0,
+    "soil_tree_count": 0,
+    "upper_tree_count": 0,
+    "overly_tall_tree_count": 0,
+    "floating_count": 0,
+    "buried_count": 0,
+    "volcano_mesh_unchanged": true,
+    "volcano_materials_unchanged": true,
+    "r69_distribution_preserved": true
+  },
+  "renders": [
+    "01_front_water_level.png",
+    "02_three_quarter_overview.png",
+    "03_opposite_side_overview.png",
+    "04_gameplay_distance.png",
+    "05_top_down_distribution.png"
+  ],
+  "blender_errors": [],
+  "elapsed_seconds": 234.382
+}
