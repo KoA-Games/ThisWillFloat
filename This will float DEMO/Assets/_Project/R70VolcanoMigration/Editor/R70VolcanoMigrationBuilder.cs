@@ -20,6 +20,7 @@ namespace ThisWillFloat.EditorTools
         private const string VolcanoFbx = Source + "/Meshes/R70_Volcano.fbx";
         private const string PrototypeFbx = Source + "/Meshes/R70_VegetationPrototypes.fbx";
         private const string PlacementFbx = Source + "/Meshes/R70_VegetationPlacementTransforms.fbx";
+        private const string ReviewRigFbx = Source + "/Meshes/R70_ReviewRig.fbx";
         private const string PlacementJson = Source + "/R70_VegetationPlacement.json";
         private const string MaterialJson = Source + "/R70_VegetationMaterials.json";
 
@@ -118,7 +119,7 @@ namespace ThisWillFloat.EditorTools
                 const int width = 1600;
                 const int height = 900;
                 RenderTexture target = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32);
-                target.antiAliasing = 1;
+                target.antiAliasing = 4;
                 RenderTexture previous = RenderTexture.active;
                 camera.targetTexture = target;
                 camera.Render();
@@ -168,7 +169,6 @@ namespace ThisWillFloat.EditorTools
             BuildVolcano(root.transform, volcanoMaterial);
             BuildVegetation(root.transform, vegetationMaterials);
             BuildReviewEnvironment(root.transform);
-            FitReviewCamera(root);
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -197,9 +197,11 @@ namespace ThisWillFloat.EditorTools
             ConfigureFbx(VolcanoFbx, true);
             ConfigureFbx(PrototypeFbx, true);
             ConfigureFbx(PlacementFbx, false);
+            ConfigureReviewRig();
 
             ConfigureTexture(Source + "/Textures/R70_Volcano_Albedo.png", true, false, 2048);
-            ConfigureTexture(Source + "/Textures/R70_Volcano_MacroRelief.png", false, false, 4096);
+            ConfigureTexture(Source + "/Textures/R70_Volcano_Normal.png", false, true, 2048);
+            ConfigureTexture(Source + "/Textures/R70_Volcano_Roughness.png", false, false, 2048);
             ConfigureTexture(Source + "/Textures/R70_Volcano_ErodedAsh.png", true, false, 2048);
             ConfigureTexture(Source + "/Textures/R70_ApprovedReference.png", true, false, 2048);
         }
@@ -223,6 +225,22 @@ namespace ThisWillFloat.EditorTools
             importer.importNormals = ModelImporterNormals.Import;
             importer.importTangents = ModelImporterTangents.CalculateMikk;
             importer.materialImportMode = importMaterials ? ModelImporterMaterialImportMode.ImportStandard : ModelImporterMaterialImportMode.None;
+            importer.SaveAndReimport();
+        }
+
+        private static void ConfigureReviewRig()
+        {
+            AssetDatabase.ImportAsset(ReviewRigFbx, ImportAssetOptions.ForceSynchronousImport);
+            if (AssetImporter.GetAtPath(ReviewRigFbx) is not ModelImporter importer) return;
+            importer.globalScale = 1f;
+            importer.useFileScale = true;
+            importer.bakeAxisConversion = false;
+            importer.importCameras = true;
+            importer.importLights = true;
+            importer.importAnimation = false;
+            importer.importBlendShapes = false;
+            importer.importVisibility = false;
+            importer.materialImportMode = ModelImporterMaterialImportMode.None;
             importer.SaveAndReimport();
         }
 
@@ -251,10 +269,11 @@ namespace ThisWillFloat.EditorTools
             }
             else material.shader = shader;
             material.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_Albedo.png"));
-            material.SetTexture("_MacroMap", AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_MacroRelief.png"));
+            material.SetTexture("_NormalMap", AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_Normal.png"));
+            material.SetTexture("_RoughnessMap", AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_Roughness.png"));
             material.SetColor("_BaseColor", Color.white);
-            material.SetFloat("_MacroStrength", 0.34f);
-            material.SetFloat("_Roughness", 0.9f);
+            material.SetFloat("_NormalStrength", 0.24f);
+            material.SetFloat("_Roughness", 1.0f);
             EditorUtility.SetDirty(material);
             return material;
         }
@@ -282,7 +301,7 @@ namespace ThisWillFloat.EditorTools
                 material.SetFloat("_NoiseScale", definition.noiseScale);
                 material.SetFloat("_NoiseStrength", definition.noiseStrength);
                 material.SetFloat("_VertexColorWeight", definition.useVertexColor ? definition.vertexColorWeight : 0f);
-                material.SetFloat("_AmbientLift", 0.34f);
+                material.SetFloat("_AmbientLift", 0.26f);
                 material.enableInstancing = true;
                 material.doubleSidedGI = definition.doubleSided;
                 EditorUtility.SetDirty(material);
@@ -362,27 +381,57 @@ namespace ThisWillFloat.EditorTools
 
         private static void BuildReviewEnvironment(Transform parent)
         {
+            GameObject rigSource = AssetDatabase.LoadAssetAtPath<GameObject>(ReviewRigFbx);
+            GameObject rig = rigSource != null ? PrefabUtility.InstantiatePrefab(rigSource) as GameObject : null;
+            if (rig == null) throw new InvalidOperationException("Could not instantiate the exported Blender review rig");
+            rig.name = "R70_BlenderReviewRig";
+            rig.transform.SetParent(parent, false);
+
+            Camera importedCamera = rig.GetComponentsInChildren<Camera>(true).FirstOrDefault();
+            Light[] importedLights = rig.GetComponentsInChildren<Light>(true);
+            Light importedSun = importedLights.FirstOrDefault(item => item.type == LightType.Directional);
+            Light importedFill = importedLights.FirstOrDefault(item => item != importedSun);
+            if (importedCamera == null || importedSun == null)
+                throw new InvalidOperationException("Exported Blender camera or sun is missing from R70_ReviewRig.fbx");
+
+            foreach (Camera extra in rig.GetComponentsInChildren<Camera>(true)) extra.enabled = false;
+            foreach (Light extra in importedLights) extra.enabled = false;
+
             GameObject lightObject = new GameObject("R70_Neutral_Daylight");
             lightObject.transform.SetParent(parent, false);
-            lightObject.transform.rotation = Quaternion.Euler(31f, -23f, -38f);
+            lightObject.transform.rotation = importedSun.transform.rotation;
             Light light = lightObject.AddComponent<Light>();
             light.type = LightType.Directional;
             light.color = new Color(1f, 0.941176f, 0.847059f);
-            light.intensity = 2.55f;
+            light.intensity = 1.6f;
             light.shadows = LightShadows.Soft;
+
+            if (importedFill != null)
+            {
+                GameObject fillObject = new GameObject("R70_Sky_Fill_Approximation");
+                fillObject.transform.SetParent(parent, false);
+                fillObject.transform.rotation = importedFill.transform.rotation;
+                Light fill = fillObject.AddComponent<Light>();
+                fill.type = LightType.Directional;
+                fill.color = new Color(0.72f, 0.81f, 0.81f);
+                fill.intensity = 0.42f;
+                fill.shadows = LightShadows.None;
+            }
 
             GameObject cameraObject = new GameObject("R70_ReviewCamera");
             cameraObject.transform.SetParent(parent, false);
-            cameraObject.transform.position = new Vector3(145f, 48f, 218f);
-            Vector3 target = new Vector3(0f, 24.3425f, 0f);
-            cameraObject.transform.rotation = Quaternion.LookRotation(target - cameraObject.transform.position, Vector3.up);
+            cameraObject.transform.position = importedCamera.transform.position;
+            cameraObject.transform.rotation = importedCamera.transform.rotation;
             Camera camera = cameraObject.AddComponent<Camera>();
             camera.usePhysicalProperties = false;
+            // Blender's 55 mm camera stores horizontal sensor fit; Unity uses
+            // vertical FOV. At the approved 16:9 framing this is 20.87 degrees.
             camera.fieldOfView = 20.87f;
             camera.nearClipPlane = 0.3f;
             camera.farClipPlane = 1000f;
+            camera.allowMSAA = true;
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = new Color(0.48f, 0.52f, 0.51f, 1f);
+            camera.backgroundColor = new Color(0.64f, 0.66f, 0.65f, 1f);
             camera.tag = "MainCamera";
 
             GameObject water = GameObject.CreatePrimitive(PrimitiveType.Plane);
@@ -395,18 +444,20 @@ namespace ThisWillFloat.EditorTools
             if (urpLit != null)
             {
                 Material waterMaterial = new Material(urpLit) { name = "M_R70_Water_Runtime" };
-                waterMaterial.SetColor("_BaseColor", new Color(0.16f, 0.275f, 0.305f, 1f));
+                waterMaterial.SetColor("_BaseColor", new Color(0.27f, 0.38f, 0.41f, 1f));
                 waterMaterial.SetFloat("_Smoothness", 0.36f);
                 water.GetComponent<MeshRenderer>().sharedMaterial = waterMaterial;
                 water.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
             }
 
             RenderSettings.ambientMode = AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = new Color(0.48f, 0.52f, 0.51f);
-            RenderSettings.ambientEquatorColor = new Color(0.31f, 0.34f, 0.32f);
-            RenderSettings.ambientGroundColor = new Color(0.17f, 0.18f, 0.16f);
-            RenderSettings.ambientIntensity = 0.76f;
+            RenderSettings.ambientSkyColor = new Color(0.36f, 0.39f, 0.38f);
+            RenderSettings.ambientEquatorColor = new Color(0.25f, 0.27f, 0.25f);
+            RenderSettings.ambientGroundColor = new Color(0.15f, 0.16f, 0.14f);
+            RenderSettings.ambientIntensity = 0.88f;
             RenderSettings.fog = false;
+
+            Debug.Log($"R70_IMPORTED_RIG camera={cameraObject.transform.position} forward={cameraObject.transform.forward} fov={camera.fieldOfView} sunForward={lightObject.transform.forward}");
         }
 
         private static void FitReviewCamera(GameObject root)

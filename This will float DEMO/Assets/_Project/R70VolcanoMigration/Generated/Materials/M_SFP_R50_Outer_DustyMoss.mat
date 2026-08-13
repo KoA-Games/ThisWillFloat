@@ -25,12 +25,12 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _AmbientLift: 0.34
+    - _AmbientLift: 0.26
     - _NoiseScale: 0.55
     - _NoiseStrength: 0.07
     - _Roughness: 0.88
-    - _VertexColorWeight: 0
+    - _VertexColorWeight: 1
     m_Colors:
-    - _BaseColor: {r: 0.321569, g: 0.384314, b: 0.282353, a: 1}
+    - _BaseColor: {r: 0.901948, g: 0.906323, b: 0.898682, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

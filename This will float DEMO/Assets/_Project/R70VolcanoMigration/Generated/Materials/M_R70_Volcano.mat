@@ -31,10 +31,19 @@ Material:
         m_Texture: {fileID: 2800000, guid: 11400cc4e095949fba564ae15747d0d9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: 73401aa36928b4061a73b5b47558e711, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RoughnessMap:
+        m_Texture: {fileID: 2800000, guid: 0731fa66fe4e744498d093a94ae09f4e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _MacroStrength: 0.34
-    - _Roughness: 0.9
+    - _NormalStrength: 0.24
+    - _Roughness: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

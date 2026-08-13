@@ -84,15 +84,19 @@ Shader "This Will Float/R70 Foliage"
             {
                 UNITY_SETUP_INSTANCE_ID(input);
                 half3 normalWS = normalize(input.normalWS) * (isFrontFace ? 1.0h : -1.0h);
-                half3 vertexTint = lerp(1.0h.xxx, saturate(input.color.rgb), _VertexColorWeight);
+                // Blender's FBX exporter stores COLOR_0 as sRGB-encoded values.
+                // Vertex colors are not automatically decoded by Unity, so decode
+                // explicitly before applying Blender's material ramp multiplier.
+                half3 linearVertexColor = SRGBToLinear(saturate(input.color.rgb));
+                half3 vertexTint = lerp(1.0h.xxx, linearVertexColor, _VertexColorWeight);
                 half noise = (half)Hash31(floor(input.positionWS * _NoiseScale)) * 2.0h - 1.0h;
-                half3 albedo = _BaseColor.rgb * vertexTint * (1.0h + noise * _NoiseStrength);
+                half3 albedo = _BaseColor.rgb * vertexTint * (1.0h + noise * _NoiseStrength) * 0.68h;
 
                 Light mainLight = GetMainLight(input.shadowCoord);
                 half ndl = saturate(dot(normalWS, mainLight.direction));
                 half wrapped = saturate(ndl * (1.0h - _AmbientLift) + _AmbientLift);
-                half shadow = lerp(0.66h, 1.0h, mainLight.shadowAttenuation);
-                half3 lit = albedo * (mainLight.color * wrapped * shadow + 0.24h);
+                half shadow = lerp(0.76h, 1.0h, mainLight.shadowAttenuation);
+                half3 lit = albedo * (mainLight.color * wrapped * shadow + 0.30h);
                 lit = MixFog(lit, input.fogFactor);
                 return half4(lit, 1.0h);
             }

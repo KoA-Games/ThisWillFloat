@@ -134,13 +134,6 @@ def export_vegetation_prototypes_and_placements(vegetation):
     return len(prototype_objects), placement_records
 
 
-def linear_to_srgb(value):
-    value = max(0.0, min(1.0, float(value)))
-    if value <= 0.0031308:
-        return 12.92 * value
-    return 1.055 * pow(value, 1.0 / 2.4) - 0.055
-
-
 def material_base_color(material):
     if material.use_nodes:
         principled = next(
@@ -151,8 +144,44 @@ def material_base_color(material):
             base = principled.inputs.get("Base Color")
             if base is not None and not base.is_linked:
                 rgba = list(base.default_value)
-                return [linear_to_srgb(v) for v in rgba[:3]] + [float(rgba[3])]
+                # Blender node colors and Unity material Color properties are both
+                # consumed as linear values in this Linear-color-space project.
+                # Converting these values to sRGB here made foliage substantially
+                # brighter and more yellow/mint than the approved Blender render.
+                return [float(v) for v in rgba]
     return [float(v) for v in material.diffuse_color]
+
+
+def material_vertex_color_mix(material):
+    """Return the Blender Color Attribute multiplier when the final Base Color uses it.
+
+    The production foliage materials use MixRGB/MULTIPLY at a restrained factor:
+    output = vertexColor * ((1-factor) + rampColor*factor).  Preserve that
+    structure in Unity instead of exporting the unused Principled default color.
+    """
+    if not material.use_nodes:
+        return None
+    principled = next(
+        (node for node in material.node_tree.nodes if node.bl_idname == "ShaderNodeBsdfPrincipled"),
+        None,
+    )
+    if principled is None:
+        return None
+    base = principled.inputs.get("Base Color")
+    if base is None or not base.is_linked:
+        return None
+    mix = base.links[0].from_node
+    if mix.bl_idname != "ShaderNodeMixRGB" or mix.blend_type != "MULTIPLY":
+        return None
+    if not mix.inputs[1].is_linked or mix.inputs[1].links[0].from_node.bl_idname != "ShaderNodeVertexColor":
+        return None
+    factor = float(mix.inputs[0].default_value)
+    ramp_average = [1.0, 1.0, 1.0]
+    if mix.inputs[2].is_linked and mix.inputs[2].links[0].from_node.bl_idname == "ShaderNodeValToRGB":
+        ramp = mix.inputs[2].links[0].from_node.color_ramp
+        ramp_average = [statistics.fmean(float(element.color[channel]) for element in ramp.elements) for channel in range(3)]
+    multiplier = [(1.0 - factor) + ramp_average[channel] * factor for channel in range(3)]
+    return multiplier + [1.0]
 
 
 def material_roughness(material):
@@ -199,21 +228,11 @@ def material_manifest(objects):
                 mesh_colors[material.name].append(average)
 
     payload = []
-    understory_linear = {
-        "M_TV_Understory_Stem": (0.132868, 0.162029, 0.07036, 1.0),
-        "M_TV_Understory_Leaf_Dark": (0.042311, 0.099899, 0.051269, 1.0),
-        "M_TV_Understory_Leaf_Mid": (0.097587, 0.194618, 0.076185, 1.0),
-        "M_TV_Understory_Leaf_Light": (0.226966, 0.323143, 0.138432, 1.0),
-    }
     for material in materials:
-        color = material_base_color(material)
-        use_vertex_color = material.name.startswith("M_TV_Understory_")
-        vertex_color_weight = 0.0
-        if use_vertex_color:
-            # Blender mixes COLOR_0 with a restrained dark/olive noise ramp at 16%.
-            # Use the brighter ramp stop as the Unity base and retain subtle vertex breakup.
-            color = [linear_to_srgb(v) for v in understory_linear[material.name][:3]] + [1.0]
-            vertex_color_weight = 0.18
+        vertex_mix = material_vertex_color_mix(material)
+        use_vertex_color = vertex_mix is not None
+        color = vertex_mix if use_vertex_color else material_base_color(material)
+        vertex_color_weight = 1.0 if use_vertex_color else 0.0
 
         name_lower = material.name.lower()
         is_bark = "bark" in name_lower or "stem" in name_lower or "trunk" in name_lower
@@ -279,26 +298,34 @@ def main():
         key=lambda obj: obj.name,
     )
 
-    export_fbx(MESH_ROOT / "R70_Volcano.fbx", [volcano])
-    prototype_count, placement_records = export_vegetation_prototypes_and_placements(vegetation)
+    export_meshes = os.environ.get("R70_EXPORT_MESHES", "1") != "0"
+    if export_meshes:
+        export_fbx(MESH_ROOT / "R70_Volcano.fbx", [volcano])
+        prototype_count, placement_records = export_vegetation_prototypes_and_placements(vegetation)
+    else:
+        placement_payload = json.loads((SOURCE_ROOT / "R70_VegetationPlacement.json").read_text(encoding="utf-8"))
+        placement_records = placement_payload["placements"]
+        prototype_count = len({record["source"] for record in placement_records})
+        print("R70_MESH_EXPORT_SKIPPED material-only refresh")
 
     rig_objects = [
         bpy.data.objects[name]
         for name in ("CAM_R69_ColorZone_Placement", "L_R69_Neutral_Daylight", "L_R69_Sky_Fill")
         if name in bpy.data.objects
     ]
-    select_only(rig_objects)
-    bpy.ops.export_scene.fbx(
-        filepath=str(MESH_ROOT / "R70_ReviewRig.fbx"),
-        use_selection=True,
-        object_types={"CAMERA", "LIGHT"},
-        bake_anim=False,
-        axis_forward="-Z",
-        axis_up="Y",
-        apply_unit_scale=True,
-        apply_scale_options="FBX_SCALE_NONE",
-        use_custom_props=True,
-    )
+    if export_meshes:
+        select_only(rig_objects)
+        bpy.ops.export_scene.fbx(
+            filepath=str(MESH_ROOT / "R70_ReviewRig.fbx"),
+            use_selection=True,
+            object_types={"CAMERA", "LIGHT"},
+            bake_anim=False,
+            axis_forward="-Z",
+            axis_up="Y",
+            apply_unit_scale=True,
+            apply_scale_options="FBX_SCALE_NONE",
+            use_custom_props=True,
+        )
 
     save_image(image_by_name("Volcano_Hero_R20_Albedo"), TEXTURE_ROOT / "R70_Volcano_Albedo.png")
     save_image(image_by_name("Volcano_MacroRelief_Step3A_R2"), TEXTURE_ROOT / "R70_Volcano_MacroRelief.png")

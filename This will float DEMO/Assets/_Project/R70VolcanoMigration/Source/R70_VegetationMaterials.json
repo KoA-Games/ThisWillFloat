@@ -3,99 +3,99 @@
     {
       "name": "M_DSM_Core_Dark",
       "color": [
-        0.14902,
-        0.239216,
-        0.188235,
+        0.85422,
+        0.859671,
+        0.85539,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "M_DSM_Outer_Moss",
       "color": [
-        0.32549,
-        0.419608,
-        0.282353,
+        0.877397,
+        0.885659,
+        0.871529,
         1.0
       ],
       "roughness": 0.88,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "M_DSM_Surface_Forest",
       "color": [
-        0.219608,
-        0.337255,
-        0.235294,
+        0.849746,
+        0.859919,
+        0.848799,
         1.0
       ],
       "roughness": 0.88,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.06
     },
     {
       "name": "M_DUF_R50_CharcoalGreen",
       "color": [
-        0.078431,
-        0.129412,
-        0.105882,
+        0.881478,
+        0.882899,
+        0.881988,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "M_DUF_R50_DeepOlive",
       "color": [
-        0.14902,
-        0.211765,
-        0.164706,
+        0.873919,
+        0.876849,
+        0.873819,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "M_DUF_R50_SubduedMoss",
       "color": [
-        0.223529,
-        0.290196,
-        0.219608,
+        0.914923,
+        0.917789,
+        0.914305,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.06
     },
     {
       "name": "M_R61_SplitTrunk_Bark",
       "color": [
-        0.34902,
-        0.282353,
-        0.219608,
+        0.099899,
+        0.064803,
+        0.039546,
         1.0
       ],
       "roughness": 0.88,
@@ -108,795 +108,795 @@
     {
       "name": "M_SFP_R50_Interior_Olive",
       "color": [
-        0.141176,
-        0.207843,
-        0.164706,
+        0.873379,
+        0.87641,
+        0.873819,
         1.0
       ],
       "roughness": 0.88,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.06
     },
     {
       "name": "M_SFP_R50_Outer_DustyMoss",
       "color": [
-        0.321569,
-        0.384314,
-        0.282353,
+        0.901948,
+        0.906323,
+        0.898682,
         1.0
       ],
       "roughness": 0.88,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "M_SFP_R50_Surface_MossOlive",
       "color": [
-        0.223529,
-        0.294118,
-        0.203922,
+        0.868479,
+        0.873293,
+        0.86657,
         1.0
       ],
       "roughness": 0.88,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.06
     },
     {
       "name": "M_TV_Bark__R53_DUSTY_CAL.001",
       "color": [
-        0.27451,
-        0.243137,
-        0.2,
+        0.74531,
+        0.739156,
+        0.732966,
         1.0
       ],
       "roughness": 0.94,
       "doubleSided": false,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.22,
       "noiseStrength": 0.025
     },
     {
       "name": "M_TV_Understory_Leaf_Dark",
       "color": [
-        0.22745,
-        0.34902,
-        0.250979,
+        0.845159,
+        0.852482,
+        0.84675,
         1.0
       ],
       "roughness": 0.76,
       "doubleSided": true,
       "useVertexColor": true,
-      "vertexColorWeight": 0.18,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "M_TV_Understory_Leaf_Light",
       "color": [
-        0.513726,
-        0.603921,
-        0.407844,
+        0.867515,
+        0.882542,
+        0.857825,
         1.0
       ],
       "roughness": 0.7,
       "doubleSided": true,
       "useVertexColor": true,
-      "vertexColorWeight": 0.18,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "M_TV_Understory_Leaf_Mid",
       "color": [
-        0.345097,
-        0.478432,
-        0.305882,
+        0.85154,
+        0.864927,
+        0.850196,
         1.0
       ],
       "roughness": 0.72,
       "doubleSided": true,
       "useVertexColor": true,
-      "vertexColorWeight": 0.18,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.06
     },
     {
       "name": "M_TV_Understory_Stem",
       "color": [
-        0.4,
-        0.439215,
-        0.294117,
+        0.856108,
+        0.858441,
+        0.848685,
         1.0
       ],
       "roughness": 0.82,
       "doubleSided": false,
       "useVertexColor": true,
-      "vertexColorWeight": 0.18,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.22,
       "noiseStrength": 0.025
     },
     {
       "name": "R61_deep_primary_M_TV_Leaf_Dark__R53_DUSTY_CAL.003",
       "color": [
-        0.105902,
-        0.156153,
-        0.114265,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_deep_primary_M_TV_Leaf_Dark__R53_DUSTY_CAL.006",
       "color": [
-        0.105902,
-        0.156153,
-        0.114265,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_deep_primary_M_TV_Leaf_Dark__R53_DUSTY_CAL.007",
       "color": [
-        0.105902,
-        0.156153,
-        0.114265,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_deep_primary_M_TV_Leaf_Light__R53_DUSTY_CAL.003",
       "color": [
-        0.260255,
-        0.313722,
-        0.201088,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_deep_primary_M_TV_Leaf_Light__R53_DUSTY_CAL.006",
       "color": [
-        0.260255,
-        0.313722,
-        0.201088,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_deep_primary_M_TV_Leaf_Light__R53_DUSTY_CAL.007",
       "color": [
-        0.260255,
-        0.313722,
-        0.201088,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_deep_primary_M_TV_Leaf_Mid__R53_DUSTY_CAL.003",
       "color": [
-        0.179863,
-        0.242976,
-        0.156069,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_deep_primary_M_TV_Leaf_Mid__R53_DUSTY_CAL.006",
       "color": [
-        0.179863,
-        0.242976,
-        0.156069,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_deep_primary_M_TV_Leaf_Mid__R53_DUSTY_CAL.007",
       "color": [
-        0.179863,
-        0.242976,
-        0.156069,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_exposed_M_TV_Leaf_Dark__R53_DUSTY_CAL.003",
       "color": [
-        0.125725,
-        0.184988,
-        0.134941,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_exposed_M_TV_Leaf_Dark__R53_DUSTY_CAL.006",
       "color": [
-        0.125725,
-        0.184988,
-        0.134941,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_exposed_M_TV_Leaf_Dark__R53_DUSTY_CAL.007",
       "color": [
-        0.125725,
-        0.184988,
-        0.134941,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_exposed_M_TV_Leaf_Light__R53_DUSTY_CAL.003",
       "color": [
-        0.308314,
-        0.37138,
-        0.237647,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_exposed_M_TV_Leaf_Light__R53_DUSTY_CAL.006",
       "color": [
-        0.308314,
-        0.37138,
-        0.237647,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_exposed_M_TV_Leaf_Light__R53_DUSTY_CAL.007",
       "color": [
-        0.308314,
-        0.37138,
-        0.237647,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_exposed_M_TV_Leaf_Mid__R53_DUSTY_CAL.003",
       "color": [
-        0.213216,
-        0.287694,
-        0.184392,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_exposed_M_TV_Leaf_Mid__R53_DUSTY_CAL.006",
       "color": [
-        0.213216,
-        0.287694,
-        0.184392,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_exposed_M_TV_Leaf_Mid__R53_DUSTY_CAL.007",
       "color": [
-        0.213216,
-        0.287694,
-        0.184392,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_main_primary_M_TV_Leaf_Dark__R53_DUSTY_CAL.003",
       "color": [
-        0.116196,
-        0.172494,
-        0.127471,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_main_primary_M_TV_Leaf_Dark__R53_DUSTY_CAL.006",
       "color": [
-        0.116196,
-        0.172494,
-        0.127471,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_main_primary_M_TV_Leaf_Dark__R53_DUSTY_CAL.007",
       "color": [
-        0.116196,
-        0.172494,
-        0.127471,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_main_primary_M_TV_Leaf_Light__R53_DUSTY_CAL.003",
       "color": [
-        0.28749,
-        0.347357,
-        0.223824,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_main_primary_M_TV_Leaf_Light__R53_DUSTY_CAL.006",
       "color": [
-        0.28749,
-        0.347357,
-        0.223824,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_main_primary_M_TV_Leaf_Light__R53_DUSTY_CAL.007",
       "color": [
-        0.28749,
-        0.347357,
-        0.223824,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_main_primary_M_TV_Leaf_Mid__R53_DUSTY_CAL.003",
       "color": [
-        0.198275,
-        0.268847,
-        0.173863,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.06
     },
     {
       "name": "R61_main_primary_M_TV_Leaf_Mid__R53_DUSTY_CAL.006",
       "color": [
-        0.198275,
-        0.268847,
-        0.173863,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.06
     },
     {
       "name": "R61_main_primary_M_TV_Leaf_Mid__R53_DUSTY_CAL.007",
       "color": [
-        0.198275,
-        0.268847,
-        0.173863,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.06
     },
     {
       "name": "R61_secondary_M_TV_Leaf_Dark__R53_DUSTY_CAL.003",
       "color": [
-        0.117431,
-        0.169847,
-        0.120735,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_secondary_M_TV_Leaf_Dark__R53_DUSTY_CAL.006",
       "color": [
-        0.117431,
-        0.169847,
-        0.120735,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_secondary_M_TV_Leaf_Dark__R53_DUSTY_CAL.007",
       "color": [
-        0.117431,
-        0.169847,
-        0.120735,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_secondary_M_TV_Leaf_Light__R53_DUSTY_CAL.003",
       "color": [
-        0.283078,
-        0.338945,
-        0.213912,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_secondary_M_TV_Leaf_Light__R53_DUSTY_CAL.006",
       "color": [
-        0.283078,
-        0.338945,
-        0.213912,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_secondary_M_TV_Leaf_Light__R53_DUSTY_CAL.007",
       "color": [
-        0.283078,
-        0.338945,
-        0.213912,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_secondary_M_TV_Leaf_Mid__R53_DUSTY_CAL.003",
       "color": [
-        0.196804,
-        0.263024,
-        0.165598,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.06
     },
     {
       "name": "R61_secondary_M_TV_Leaf_Mid__R53_DUSTY_CAL.006",
       "color": [
-        0.196804,
-        0.263024,
-        0.165598,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.06
     },
     {
       "name": "R61_secondary_M_TV_Leaf_Mid__R53_DUSTY_CAL.007",
       "color": [
-        0.196804,
-        0.263024,
-        0.165598,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.06
     },
     {
       "name": "R61_upper_edge_M_TV_Leaf_Dark__R53_DUSTY_CAL.003",
       "color": [
-        0.118412,
-        0.165918,
-        0.112088,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_upper_edge_M_TV_Leaf_Dark__R53_DUSTY_CAL.006",
       "color": [
-        0.118412,
-        0.165918,
-        0.112088,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_upper_edge_M_TV_Leaf_Dark__R53_DUSTY_CAL.007",
       "color": [
-        0.118412,
-        0.165918,
-        0.112088,
+        0.824064,
+        0.828016,
+        0.823949,
         1.0
       ],
       "roughness": 0.91,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.055
     },
     {
       "name": "R61_upper_edge_M_TV_Leaf_Light__R53_DUSTY_CAL.003",
       "color": [
-        0.276529,
-        0.327329,
-        0.201029,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_upper_edge_M_TV_Leaf_Light__R53_DUSTY_CAL.006",
       "color": [
-        0.276529,
-        0.327329,
-        0.201029,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_upper_edge_M_TV_Leaf_Light__R53_DUSTY_CAL.007",
       "color": [
-        0.276529,
-        0.327329,
-        0.201029,
+        0.839679,
+        0.847662,
+        0.830978,
         1.0
       ],
       "roughness": 0.87,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.07
     },
     {
       "name": "R61_upper_edge_M_TV_Leaf_Mid__R53_DUSTY_CAL.003",
       "color": [
-        0.194176,
-        0.254859,
-        0.154912,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.06
     },
     {
       "name": "R61_upper_edge_M_TV_Leaf_Mid__R53_DUSTY_CAL.006",
       "color": [
-        0.194176,
-        0.254859,
-        0.154912,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.06
     },
     {
       "name": "R61_upper_edge_M_TV_Leaf_Mid__R53_DUSTY_CAL.007",
       "color": [
-        0.194176,
-        0.254859,
-        0.154912,
+        0.830295,
+        0.837325,
+        0.8271,
         1.0
       ],
       "roughness": 0.89,
       "doubleSided": true,
-      "useVertexColor": false,
-      "vertexColorWeight": 0.0,
+      "useVertexColor": true,
+      "vertexColorWeight": 1.0,
       "noiseScale": 0.55,
       "noiseStrength": 0.06
     }
