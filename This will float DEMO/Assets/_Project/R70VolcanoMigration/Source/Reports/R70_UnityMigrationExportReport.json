@@ -1,0 +1,69 @@
+{
+  "sourceBlend": "/private/tmp/twf-r70-unity-ZOP4bK/worktree/This will float DEMO/Blender/Volcano/Volcano_Hero_02_ColorZoneTransitionRefinement_R70_ReviewReady.blend",
+  "exportCollections": [
+    "R69_PLACED_CLUSTER_COMMUNITIES",
+    "R70_GAP_FILL_TRANSITION_REFINEMENT"
+  ],
+  "volcano": {
+    "objectCount": 1,
+    "uniqueMeshCount": 1,
+    "vertexInstanceSum": 48924,
+    "triangleInstanceSum": 97844,
+    "materialCount": 1
+  },
+  "vegetation": {
+    "objectCount": 2098,
+    "uniqueMeshCount": 166,
+    "vertexInstanceSum": 13003122,
+    "triangleInstanceSum": 13580880,
+    "materialCount": 60
+  },
+  "prototypeCount": 166,
+  "placementRecordCount": 2098,
+  "camera": {
+    "blenderLocation": [
+      145.0,
+      -218.0,
+      48.0
+    ],
+    "blenderEulerRadians": [
+      1.48068309,
+      -3e-08,
+      0.58694339
+    ],
+    "lensMm": 55.0,
+    "sensorWidthMm": 36.0
+  },
+  "sun": {
+    "blenderEulerRadians": [
+      0.54105204,
+      -0.40142572,
+      -0.66322511
+    ],
+    "energy": 2.549999952316284,
+    "color": [
+      1.0,
+      0.941176,
+      0.847059
+    ]
+  },
+  "world": {
+    "color": [
+      0.47932,
+      0.520996,
+      0.508881,
+      1.0
+    ],
+    "strength": 0.7599999904632568
+  },
+  "coordinateConversion": "FBX axis_forward=-Z, axis_up=Y; Unity import scale 1",
+  "preservation": {
+    "volcanoMesh": true,
+    "vegetationTransforms": true,
+    "vertexColors": true,
+    "uvs": true,
+    "normals": true,
+    "blenderProceduralShaders": false,
+    "strategy": "URP custom shaders plus exported colors/textures"
+  }
+}
