@@ -42,7 +42,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _MacroStrength: 0.34
-    - _NormalStrength: 0.24
+    - _NormalStrength: 0.5
     - _Roughness: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}

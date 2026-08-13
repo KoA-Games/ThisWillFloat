@@ -7,7 +7,9 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
+using ThisWillFloat.R70Migration;
 
 namespace ThisWillFloat.EditorTools
 {
@@ -23,6 +25,8 @@ namespace ThisWillFloat.EditorTools
         private const string ReviewRigFbx = Source + "/Meshes/R70_ReviewRig.fbx";
         private const string PlacementJson = Source + "/R70_VegetationPlacement.json";
         private const string MaterialJson = Source + "/R70_VegetationMaterials.json";
+        private const string R70PipelinePath = Generated + "/R70_LongRangeShadow_RPAsset.asset";
+        private const string PcPipelinePath = "Assets/Settings/PC_RPAsset.asset";
 
         [Serializable]
         private sealed class PlacementSet { public Placement[] placements; }
@@ -98,7 +102,26 @@ namespace ThisWillFloat.EditorTools
                         throw new InvalidOperationException("A renderer has a missing mesh: " + renderer.name);
                 }
 
-                Debug.Log($"R70_UNITY_MIGRATION_VALIDATION_PASS scene={scene.path} renderers={renderers} meshFilters={meshFilters}");
+                int vegetationShadowCasters = vegetation.GetComponentsInChildren<MeshRenderer>(true)
+                    .Count(renderer => renderer.shadowCastingMode != ShadowCastingMode.Off);
+                if (vegetationShadowCasters != vegetation.GetComponentsInChildren<MeshRenderer>(true).Length)
+                    throw new InvalidOperationException("One or more vegetation renderers do not cast shadows");
+
+                R70SceneRenderProfile renderProfile = root.GetComponent<R70SceneRenderProfile>();
+                if (renderProfile == null || renderProfile.pipelineAsset == null)
+                    throw new InvalidOperationException("R70 long-range shadow profile is missing");
+                SerializedObject pipeline = new SerializedObject(renderProfile.pipelineAsset);
+                float shadowDistance = pipeline.FindProperty("m_ShadowDistance").floatValue;
+                int shadowResolution = pipeline.FindProperty("m_MainLightShadowmapResolution").intValue;
+                int cascadeCount = pipeline.FindProperty("m_ShadowCascadeCount").intValue;
+                if (shadowDistance < 350f || shadowResolution < 4096 || cascadeCount != 4)
+                    throw new InvalidOperationException($"R70 shadow profile is insufficient: distance={shadowDistance}, resolution={shadowResolution}, cascades={cascadeCount}");
+
+                TextureImporter normalImporter = AssetImporter.GetAtPath(Source + "/Textures/R70_Volcano_Normal.png") as TextureImporter;
+                if (normalImporter == null || normalImporter.maxTextureSize < 4096 || normalImporter.textureCompression != TextureImporterCompression.Uncompressed)
+                    throw new InvalidOperationException("R70 volcano normal is not imported as uncompressed 4K");
+
+                Debug.Log($"R70_UNITY_MIGRATION_VALIDATION_PASS scene={scene.path} renderers={renderers} meshFilters={meshFilters} vegetationShadowCasters={vegetationShadowCasters} shadowDistance={shadowDistance} shadowResolution={shadowResolution} cascades={cascadeCount} normalMaxSize={normalImporter.maxTextureSize}");
             }
             catch (Exception exception)
             {
@@ -159,12 +182,18 @@ namespace ThisWillFloat.EditorTools
             ConfigureImporters();
             AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
 
+            UniversalRenderPipelineAsset pipeline = CreateR70PipelineAsset();
+            QualitySettings.renderPipeline = pipeline;
+
             Material volcanoMaterial = CreateVolcanoMaterial();
             Dictionary<string, Material> vegetationMaterials = CreateVegetationMaterials();
 
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             GameObject root = new GameObject("R70_VOLCANO_MIGRATION");
             root.isStatic = true;
+            R70SceneRenderProfile renderProfile = root.AddComponent<R70SceneRenderProfile>();
+            renderProfile.pipelineAsset = pipeline;
+            renderProfile.ApplyProfile();
 
             BuildVolcano(root.transform, volcanoMaterial);
             BuildVegetation(root.transform, vegetationMaterials);
@@ -183,6 +212,7 @@ namespace ThisWillFloat.EditorTools
             EnsureFolder("Assets/_Project", "R70VolcanoMigration");
             EnsureFolder(Root, "Generated");
             EnsureFolder(Generated, "Materials");
+            EnsureFolder(Root, "Runtime");
             EnsureFolder("Assets/_Project", "Scenes");
         }
 
@@ -199,11 +229,11 @@ namespace ThisWillFloat.EditorTools
             ConfigureFbx(PlacementFbx, false);
             ConfigureReviewRig();
 
-            ConfigureTexture(Source + "/Textures/R70_Volcano_Albedo.png", true, false, 2048);
-            ConfigureTexture(Source + "/Textures/R70_Volcano_Normal.png", false, true, 2048);
-            ConfigureTexture(Source + "/Textures/R70_Volcano_Roughness.png", false, false, 2048);
-            ConfigureTexture(Source + "/Textures/R70_Volcano_ErodedAsh.png", true, false, 2048);
-            ConfigureTexture(Source + "/Textures/R70_ApprovedReference.png", true, false, 2048);
+            ConfigureTexture(Source + "/Textures/R70_Volcano_Albedo.png", true, false, 2048, true);
+            ConfigureTexture(Source + "/Textures/R70_Volcano_Normal.png", false, true, 4096, true);
+            ConfigureTexture(Source + "/Textures/R70_Volcano_Roughness.png", false, false, 4096, true);
+            ConfigureTexture(Source + "/Textures/R70_Volcano_ErodedAsh.png", true, false, 2048, false);
+            ConfigureTexture(Source + "/Textures/R70_ApprovedReference.png", true, false, 2048, false);
         }
 
         private static void ConfigureFbx(string path, bool importMaterials)
@@ -244,16 +274,38 @@ namespace ThisWillFloat.EditorTools
             importer.SaveAndReimport();
         }
 
-        private static void ConfigureTexture(string path, bool sRgb, bool normalMap, int maxSize)
+        private static void ConfigureTexture(string path, bool sRgb, bool normalMap, int maxSize, bool uncompressed)
         {
             AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
             if (AssetImporter.GetAtPath(path) is not TextureImporter importer) return;
             importer.sRGBTexture = sRgb;
             importer.textureType = normalMap ? TextureImporterType.NormalMap : TextureImporterType.Default;
             importer.mipmapEnabled = true;
+            importer.anisoLevel = 8;
             importer.maxTextureSize = maxSize;
-            importer.textureCompression = TextureImporterCompression.CompressedHQ;
+            importer.textureCompression = uncompressed ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
             importer.SaveAndReimport();
+        }
+
+        private static UniversalRenderPipelineAsset CreateR70PipelineAsset()
+        {
+            if (AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(R70PipelinePath) == null)
+            {
+                if (!AssetDatabase.CopyAsset(PcPipelinePath, R70PipelinePath))
+                    throw new InvalidOperationException("Could not create the R70 long-range URP profile");
+            }
+
+            UniversalRenderPipelineAsset asset = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(R70PipelinePath);
+            if (asset == null) throw new InvalidOperationException("R70 long-range URP profile failed to load");
+            SerializedObject serialized = new SerializedObject(asset);
+            serialized.FindProperty("m_ShadowDistance").floatValue = 360f;
+            serialized.FindProperty("m_MainLightShadowmapResolution").intValue = 4096;
+            serialized.FindProperty("m_ShadowCascadeCount").intValue = 4;
+            serialized.FindProperty("m_Cascade4Split").vector3Value = new Vector3(0.08f, 0.22f, 0.5f);
+            serialized.FindProperty("m_SoftShadowQuality").intValue = 3;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(asset);
+            return asset;
         }
 
         private static Material CreateVolcanoMaterial()
@@ -272,7 +324,7 @@ namespace ThisWillFloat.EditorTools
             material.SetTexture("_NormalMap", AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_Normal.png"));
             material.SetTexture("_RoughnessMap", AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_Roughness.png"));
             material.SetColor("_BaseColor", Color.white);
-            material.SetFloat("_NormalStrength", 0.24f);
+            material.SetFloat("_NormalStrength", 0.50f);
             material.SetFloat("_Roughness", 1.0f);
             EditorUtility.SetDirty(material);
             return material;
@@ -405,6 +457,9 @@ namespace ThisWillFloat.EditorTools
             light.color = new Color(1f, 0.941176f, 0.847059f);
             light.intensity = 1.6f;
             light.shadows = LightShadows.Soft;
+            light.shadowStrength = 0.72f;
+            light.shadowBias = 0.018f;
+            light.shadowNormalBias = 0.14f;
 
             if (importedFill != null)
             {
