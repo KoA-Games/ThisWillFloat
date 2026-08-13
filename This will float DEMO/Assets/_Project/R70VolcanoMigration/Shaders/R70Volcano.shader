@@ -5,9 +5,11 @@ Shader "This Will Float/R70 Volcano"
         _BaseMap("Baked R70 Albedo", 2D) = "white" {}
         [Normal] _NormalMap("Baked R70 Tangent Normal", 2D) = "bump" {}
         _RoughnessMap("Baked R70 Roughness", 2D) = "white" {}
+        _MacroMap("R70 Macro Relief", 2D) = "gray" {}
         _BaseColor("Tint", Color) = (1, 1, 1, 1)
         _NormalStrength("Normal Strength", Range(0, 2)) = 1
         _Roughness("Roughness", Range(0, 1)) = 0.9
+        _MacroColorStrength("Macro Color Relief", Range(0, 0.3)) = 0.12
     }
     SubShader
     {
@@ -29,11 +31,13 @@ Shader "This Will Float/R70 Volcano"
             TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
             TEXTURE2D(_NormalMap); SAMPLER(sampler_NormalMap);
             TEXTURE2D(_RoughnessMap); SAMPLER(sampler_RoughnessMap);
+            TEXTURE2D(_MacroMap); SAMPLER(sampler_MacroMap);
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseMap_ST;
                 half4 _BaseColor;
                 half _NormalStrength;
                 half _Roughness;
+                half _MacroColorStrength;
             CBUFFER_END
 
             struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float4 tangentOS:TANGENT; float2 uv:TEXCOORD0; };
@@ -57,14 +61,18 @@ Shader "This Will Float/R70 Volcano"
             half4 Frag(Varyings input) : SV_Target
             {
                 half3 baseColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv).rgb * _BaseColor.rgb;
+                half macro = SAMPLE_TEXTURE2D(_MacroMap, sampler_MacroMap, input.uv).r;
+                baseColor *= 1.0h + (macro - 0.5h) * _MacroColorStrength;
                 half3 normalTS = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, input.uv), _NormalStrength);
                 half3 bitangentWS = input.tangentWS.w * cross(input.normalWS, input.tangentWS.xyz);
                 half3 normalWS = normalize(TransformTangentToWorld(normalTS, half3x3(input.tangentWS.xyz, bitangentWS, input.normalWS)));
                 half roughness = saturate(SAMPLE_TEXTURE2D(_RoughnessMap, sampler_RoughnessMap, input.uv).r * _Roughness);
                 Light mainLight = GetMainLight(input.shadowCoord);
                 half ndl = saturate(dot(normalWS, mainLight.direction));
-                half shadow = lerp(0.58h, 1.0h, mainLight.shadowAttenuation);
-                half3 ambient = SampleSH(normalWS) * 0.48h + 0.24h;
+                // Receive clear foliage shadows without crushing the volcano's
+                // self-shadowed gullies into a single near-black band.
+                half shadow = lerp(0.36h, 1.0h, mainLight.shadowAttenuation);
+                half3 ambient = SampleSH(normalWS) * 0.48h + 0.19h;
                 half3 diffuse = mainLight.color * ndl * shadow;
                 half3 viewDir = SafeNormalize(GetWorldSpaceViewDir(input.positionWS));
                 half3 halfDir = SafeNormalize(mainLight.direction + viewDir);

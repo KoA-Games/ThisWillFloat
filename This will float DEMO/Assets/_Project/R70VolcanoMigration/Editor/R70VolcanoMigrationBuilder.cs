@@ -91,7 +91,9 @@ namespace ThisWillFloat.EditorTools
 
                 int renderers = root.GetComponentsInChildren<MeshRenderer>(true).Length;
                 int meshFilters = root.GetComponentsInChildren<MeshFilter>(true).Length;
-                if (renderers < 2_099 || meshFilters < 2_099)
+                // 2,100 source renderers minus 122 intentionally excluded exposed
+                // DUF helper instances, plus volcano/water review geometry.
+                if (renderers < 1_978 || meshFilters < 1_978)
                     throw new InvalidOperationException($"Unexpected mesh count: renderers={renderers}, filters={meshFilters}");
 
                 foreach (MeshRenderer renderer in root.GetComponentsInChildren<MeshRenderer>(true))
@@ -232,6 +234,7 @@ namespace ThisWillFloat.EditorTools
             ConfigureTexture(Source + "/Textures/R70_Volcano_Albedo.png", true, false, 2048, true);
             ConfigureTexture(Source + "/Textures/R70_Volcano_Normal.png", false, true, 4096, true);
             ConfigureTexture(Source + "/Textures/R70_Volcano_Roughness.png", false, false, 4096, true);
+            ConfigureTexture(Source + "/Textures/R70_Volcano_MacroRelief.png", false, false, 4096, true);
             ConfigureTexture(Source + "/Textures/R70_Volcano_ErodedAsh.png", true, false, 2048, false);
             ConfigureTexture(Source + "/Textures/R70_ApprovedReference.png", true, false, 2048, false);
         }
@@ -323,9 +326,11 @@ namespace ThisWillFloat.EditorTools
             material.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_Albedo.png"));
             material.SetTexture("_NormalMap", AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_Normal.png"));
             material.SetTexture("_RoughnessMap", AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_Roughness.png"));
+            material.SetTexture("_MacroMap", AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_MacroRelief.png"));
             material.SetColor("_BaseColor", Color.white);
-            material.SetFloat("_NormalStrength", 0.50f);
+            material.SetFloat("_NormalStrength", 0.58f);
             material.SetFloat("_Roughness", 1.0f);
+            material.SetFloat("_MacroColorStrength", 0.18f);
             EditorUtility.SetDirty(material);
             return material;
         }
@@ -354,6 +359,13 @@ namespace ThisWillFloat.EditorTools
                 material.SetFloat("_NoiseStrength", definition.noiseStrength);
                 material.SetFloat("_VertexColorWeight", definition.useVertexColor ? definition.vertexColorWeight : 0f);
                 material.SetFloat("_AmbientLift", 0.26f);
+                string lowerName = definition.name.ToLowerInvariant();
+                bool darkFoliage = lowerName.Contains("dark") || lowerName.Contains("core") || lowerName.Contains("charcoal") || lowerName.Contains("deepolive") || lowerName.Contains("interior");
+                bool woodyMaterial = lowerName.Contains("bark") || lowerName.Contains("stem") || lowerName.Contains("trunk");
+                material.SetColor("_DarkFloor", woodyMaterial
+                    ? new Color(0.105f, 0.055f, 0.028f, 1f)
+                    : new Color(0.070f, 0.180f, 0.075f, 1f));
+                material.SetFloat("_DarkFloorStrength", 1f);
                 material.enableInstancing = true;
                 material.doubleSidedGI = definition.doubleSided;
                 EditorUtility.SetDirty(material);
@@ -404,6 +416,13 @@ namespace ThisWillFloat.EditorTools
 
             foreach (Placement placement in placementSet.placements)
             {
+                // DUF_01-04 are internal shadow fillers. In the full-volcano R70
+                // export they are exposed as 122 isolated near-black shrubs along
+                // the shoreline and open slope. Exclude those helper instances;
+                // retain the actual bushes, groundcover and all tree families.
+                if (placement.source == "R70SRC_007" || placement.source == "R70SRC_008" ||
+                    placement.source == "R70SRC_009" || placement.source == "R70SRC_010")
+                    continue;
                 if (!prototypes.TryGetValue(placement.source, out Mesh mesh))
                     throw new InvalidOperationException("Missing prototype mesh: " + placement.source);
                 if (!transforms.TryGetValue(placement.name, out Transform sourceTransform))
@@ -421,14 +440,32 @@ namespace ThisWillFloat.EditorTools
                 MeshRenderer renderer = instance.AddComponent<MeshRenderer>();
                 renderer.sharedMaterials = placement.materials.Select(name =>
                 {
-                    if (!materials.TryGetValue(name, out Material material))
-                        throw new InvalidOperationException("Missing generated material: " + name);
+                    string resolvedName = ResolveVisibleFoliageMaterial(name, materials);
+                    if (!materials.TryGetValue(resolvedName, out Material material))
+                        throw new InvalidOperationException("Missing generated material: " + resolvedName);
                     return material;
                 }).ToArray();
                 renderer.shadowCastingMode = ShadowCastingMode.On;
                 renderer.receiveShadows = true;
                 renderer.lightProbeUsage = LightProbeUsage.BlendProbes;
             }
+        }
+
+        private static string ResolveVisibleFoliageMaterial(string name, Dictionary<string, Material> materials)
+        {
+            // R70's darkest Blender vertex-color ramps collapse into black dots
+            // after card overlap in Unity. Preserve the mesh and physical shadow,
+            // but use the approved neighbouring green value for visible foliage.
+            if (name == "M_DSM_Core_Dark") return "M_DSM_Surface_Forest";
+            if (name == "M_DUF_R50_CharcoalGreen" || name == "M_DUF_R50_DeepOlive")
+                return "M_DUF_R50_SubduedMoss";
+            if (name == "M_TV_Understory_Leaf_Dark") return "M_TV_Understory_Leaf_Mid";
+            if (name.Contains("_Leaf_Dark", StringComparison.Ordinal))
+            {
+                string midVariant = name.Replace("_Leaf_Dark", "_Leaf_Mid");
+                if (materials.ContainsKey(midVariant)) return midVariant;
+            }
+            return name;
         }
 
         private static void BuildReviewEnvironment(Transform parent)
@@ -457,7 +494,7 @@ namespace ThisWillFloat.EditorTools
             light.color = new Color(1f, 0.941176f, 0.847059f);
             light.intensity = 1.6f;
             light.shadows = LightShadows.Soft;
-            light.shadowStrength = 0.72f;
+            light.shadowStrength = 0.82f;
             light.shadowBias = 0.018f;
             light.shadowNormalBias = 0.14f;
 

@@ -26,11 +26,13 @@ Material:
     m_Ints: []
     m_Floats:
     - _AmbientLift: 0.26
+    - _DarkFloorStrength: 1
     - _NoiseScale: 0.55
     - _NoiseStrength: 0.055
     - _Roughness: 0.91
     - _VertexColorWeight: 1
     m_Colors:
     - _BaseColor: {r: 0.85422, g: 0.859671, b: 0.85539, a: 1}
+    - _DarkFloor: {r: 0.07, g: 0.18, b: 0.075, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

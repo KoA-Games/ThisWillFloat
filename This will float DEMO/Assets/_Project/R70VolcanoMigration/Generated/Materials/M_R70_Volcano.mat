@@ -41,8 +41,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _MacroColorStrength: 0.18
     - _MacroStrength: 0.34
-    - _NormalStrength: 0.5
+    - _NormalStrength: 0.58
     - _Roughness: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}

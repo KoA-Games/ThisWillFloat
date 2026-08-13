@@ -8,6 +8,8 @@ Shader "This Will Float/R70 Foliage"
         _NoiseStrength("Value Variation", Range(0, 0.2)) = 0.06
         _VertexColorWeight("Vertex Color Weight", Range(0, 1)) = 0
         _AmbientLift("Ambient Lift", Range(0, 1)) = 0.26
+        _DarkFloor("Dark Foliage Floor", Color) = (0.070, 0.180, 0.075, 1)
+        _DarkFloorStrength("Dark Floor Strength", Range(0, 1)) = 0
     }
 
     SubShader
@@ -56,6 +58,8 @@ Shader "This Will Float/R70 Foliage"
                 half _NoiseStrength;
                 half _VertexColorWeight;
                 half _AmbientLift;
+                half4 _DarkFloor;
+                half _DarkFloorStrength;
             CBUFFER_END
 
             float Hash31(float3 p)
@@ -91,12 +95,23 @@ Shader "This Will Float/R70 Foliage"
                 half3 vertexTint = lerp(1.0h.xxx, linearVertexColor, _VertexColorWeight);
                 half noise = (half)Hash31(floor(input.positionWS * _NoiseScale)) * 2.0h - 1.0h;
                 half3 albedo = _BaseColor.rgb * vertexTint * (1.0h + noise * _NoiseStrength) * 0.68h;
+                // Dark/core materials use a hard chromatic floor.  A luminance-only
+                // correction was insufficient because near-zero red/blue channels
+                // still produced black-looking silhouettes at gameplay distance.
+                albedo = lerp(albedo, max(albedo, _DarkFloor.rgb), _DarkFloorStrength);
 
                 Light mainLight = GetMainLight(input.shadowCoord);
                 half ndl = saturate(dot(normalWS, mainLight.direction));
                 half wrapped = saturate(ndl * (1.0h - _AmbientLift) + _AmbientLift);
-                half shadow = lerp(0.76h, 1.0h, mainLight.shadowAttenuation);
+                // Self-shadowing stays softer than the shadow received by terrain;
+                // this preserves foliage readability without weakening cast shadows.
+                half shadow = lerp(0.88h, 1.0h, mainLight.shadowAttenuation);
                 half3 lit = albedo * (mainLight.color * wrapped * shadow + 0.30h);
+                // Multiple opaque two-sided cards can receive compounded darkening.
+                // Preserve a subdued green identity in the final shaded result so
+                // understory reads as foliage rather than isolated black artifacts.
+                half3 shadedFloor = _DarkFloor.rgb * 0.82h;
+                lit = lerp(lit, max(lit, shadedFloor), _DarkFloorStrength);
                 lit = MixFog(lit, input.fogFactor);
                 return half4(lit, 1.0h);
             }
