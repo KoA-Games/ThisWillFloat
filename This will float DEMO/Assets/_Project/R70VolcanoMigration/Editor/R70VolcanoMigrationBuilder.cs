@@ -98,12 +98,12 @@ namespace ThisWillFloat.EditorTools
 
                 Transform mixedFill = vegetation.Find("R70_LowerGreen_MixedFill");
                 int mixedFillCount = mixedFill?.GetComponentsInChildren<MeshRenderer>(true).Length ?? 0;
-                if (mixedFillCount != 560)
-                    throw new InvalidOperationException($"Lower-green mixed fill is incomplete: {mixedFillCount}/560");
+                if (mixedFillCount != 960)
+                    throw new InvalidOperationException($"Lower-green mixed fill is incomplete: {mixedFillCount}/960");
                 Transform[] addedTrees = mixedFill.GetComponentsInChildren<Transform>(true)
                     .Where(item => item.name.Contains("Tree", StringComparison.Ordinal))
                     .ToArray();
-                if (addedTrees.Length != 115 || addedTrees.Any(item => Vector3.Dot(item.up, Vector3.up) < 0.999f))
+                if (addedTrees.Length != 205 || addedTrees.Any(item => Vector3.Dot(item.up, Vector3.up) < 0.999f))
                     throw new InvalidOperationException($"Added tree upright validation failed: count={addedTrees.Length}");
 
                 foreach (MeshRenderer renderer in root.GetComponentsInChildren<MeshRenderer>(true))
@@ -248,7 +248,7 @@ namespace ThisWillFloat.EditorTools
             ConfigureFbx(PlacementFbx, false);
             ConfigureReviewRig();
 
-            ConfigureTexture(Source + "/Textures/R70_Volcano_Albedo.png", true, false, 2048, true);
+            ConfigureTexture(Source + "/Textures/R70_Volcano_Albedo.png", true, false, 2048, true, true);
             ConfigureTexture(Source + "/Textures/R70_Volcano_Normal.png", false, true, 4096, true);
             ConfigureTexture(Source + "/Textures/R70_Volcano_Roughness.png", false, false, 4096, true);
             ConfigureTexture(Source + "/Textures/R70_Volcano_MacroRelief.png", false, false, 4096, true);
@@ -294,7 +294,7 @@ namespace ThisWillFloat.EditorTools
             importer.SaveAndReimport();
         }
 
-        private static void ConfigureTexture(string path, bool sRgb, bool normalMap, int maxSize, bool uncompressed)
+        private static void ConfigureTexture(string path, bool sRgb, bool normalMap, int maxSize, bool uncompressed, bool readable = false)
         {
             AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
             if (AssetImporter.GetAtPath(path) is not TextureImporter importer) return;
@@ -303,6 +303,7 @@ namespace ThisWillFloat.EditorTools
             importer.mipmapEnabled = true;
             importer.anisoLevel = 8;
             importer.maxTextureSize = maxSize;
+            importer.isReadable = readable;
             importer.textureCompression = uncompressed ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
             importer.SaveAndReimport();
         }
@@ -566,10 +567,83 @@ namespace ThisWillFloat.EditorTools
                 fillRoot.transform, terrainCollider, templatesBySource, prototypes, transforms, materials);
             totalCreated += targetedFlankCount;
 
+            int greenCoverageCount = BuildAlbedoGreenCoverageFill(
+                fillRoot.transform, terrainCollider, lowerAnchors, templatesBySource,
+                prototypes, transforms, materials);
+            totalCreated += greenCoverageCount;
+
             if (temporaryCollider)
                 UnityEngine.Object.DestroyImmediate(terrainCollider);
 
-            Debug.Log($"R70_LOWER_GREEN_MIXED_FILL created={totalCreated} anchors={lowerAnchors.Count} general=410 targetedRightFlank={targetedFlankCount}");
+            Debug.Log($"R70_LOWER_GREEN_MIXED_FILL created={totalCreated} anchors={lowerAnchors.Count} general=410 targetedRightFlank={targetedFlankCount} albedoGreenCoverage={greenCoverageCount}");
+        }
+
+        private static int BuildAlbedoGreenCoverageFill(
+            Transform parent,
+            MeshCollider terrainCollider,
+            List<Transform> lowerAnchors,
+            Dictionary<string, List<Placement>> templatesBySource,
+            Dictionary<string, Mesh> prototypes,
+            Dictionary<string, Transform> transforms,
+            Dictionary<string, Material> materials)
+        {
+            Texture2D albedo = AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_Albedo.png");
+            if (albedo == null || !albedo.isReadable)
+                throw new InvalidOperationException("Readable R70 albedo is required for green-zone coverage fill");
+
+            var plans = new[]
+            {
+                new FillPlan("GreenGroundcover", 150, new[] { "R70SRC_011", "R70SRC_014", "R70SRC_017", "R70SRC_020", "R70SRC_023", "R70SRC_026", "R70SRC_029" }, 1.0f, 0f, 0f, 15.0f, 0.80f, 0.88f, 1.18f),
+                new FillPlan("GreenBush",        90, new[] { "R70SRC_003", "R70SRC_004", "R70SRC_005", "R70SRC_006" }, 1.55f, 0f, 0f, 14.0f, 0.88f, 0.82f, 1.10f),
+                new FillPlan("GreenUnderstory",  70, new[] { "R70SRC_159", "R70SRC_160", "R70SRC_161", "R70SRC_162", "R70SRC_163", "R70SRC_164", "R70SRC_165", "R70SRC_166" }, 1.9f, 0f, 0f, 13.0f, 0.92f, 0.78f, 1.04f),
+                new FillPlan("GreenSmallTree",   60, new[] { "R70SRC_118", "R70SRC_137", "R70SRC_149", "R70SRC_154" }, 2.8f, 0f, 0f, 11.0f, 0.92f, 0.76f, 0.98f),
+                new FillPlan("GreenMediumTree",  30, new[] { "R70SRC_106", "R70SRC_109", "R70SRC_112", "R70SRC_115", "R70SRC_123", "R70SRC_129" }, 4.0f, 0f, 0f, 8.5f, 0.84f, 0.62f, 0.80f),
+            };
+
+            var random = new System.Random(70603);
+            int total = 0;
+            foreach (FillPlan plan in plans)
+            {
+                var positions = new List<Vector3>();
+                string[] validSources = plan.sources.Where(templatesBySource.ContainsKey).ToArray();
+                int created = 0;
+                int attempts = 0;
+                while (created < plan.count && attempts++ < plan.count * 120)
+                {
+                    float radius = Mathf.Sqrt(Mathf.Lerp(32f * 32f, 73f * 73f, (float)random.NextDouble()));
+                    float angle = (float)(random.NextDouble() * Mathf.PI * 2f);
+                    Vector3 rayOrigin = new Vector3(Mathf.Cos(angle) * radius, 120f, Mathf.Sin(angle) * radius);
+                    if (!terrainCollider.Raycast(new Ray(rayOrigin, Vector3.down), out RaycastHit hit, 220f)) continue;
+                    if (hit.point.y > plan.maxHeight || hit.normal.y < 0.43f) continue;
+
+                    Color terrainColor = albedo.GetPixelBilinear(hit.textureCoord.x, hit.textureCoord.y);
+                    bool isGreen = terrainColor.g > terrainColor.r * 1.05f &&
+                                   terrainColor.g > terrainColor.b * 1.12f;
+                    if (!isGreen) continue;
+
+                    Vector3 candidate = hit.point + hit.normal * 0.035f;
+                    if (positions.Any(position => HorizontalDistance(position, candidate) < plan.minSpacing)) continue;
+                    float originalClearance = plan.label.Contains("Tree", StringComparison.Ordinal) ? 2.4f : 0.9f;
+                    if (lowerAnchors.Any(anchor => HorizontalDistance(anchor.localPosition, candidate) < originalClearance)) continue;
+
+                    string source = validSources[random.Next(validSources.Length)];
+                    Placement template = templatesBySource[source][random.Next(templatesBySource[source].Count)];
+                    Transform templateTransform = transforms[template.name];
+                    float uniformScale = Mathf.Lerp(plan.minScale, plan.maxScale, (float)random.NextDouble());
+                    Vector3 scale = templateTransform.localScale * uniformScale;
+                    scale.y *= plan.verticalScale;
+                    Quaternion rotation = CreateSurfaceAwareRotation(
+                        plan.label, hit.normal, (float)random.NextDouble() * 360f);
+                    CreateVegetationInstance(parent, $"R70_{plan.label}_{created + 1:000}", prototypes[source],
+                        template, candidate, rotation, scale, materials);
+                    positions.Add(candidate);
+                    created++;
+                    total++;
+                }
+                if (created < plan.count)
+                    throw new InvalidOperationException($"Only created {created}/{plan.count} green coverage instances for {plan.label}");
+            }
+            return total;
         }
 
         private static int BuildTargetedRightFlankFill(
