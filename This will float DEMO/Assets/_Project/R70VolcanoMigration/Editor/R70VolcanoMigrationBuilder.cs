@@ -100,6 +100,11 @@ namespace ThisWillFloat.EditorTools
                 int mixedFillCount = mixedFill?.GetComponentsInChildren<MeshRenderer>(true).Length ?? 0;
                 if (mixedFillCount != 560)
                     throw new InvalidOperationException($"Lower-green mixed fill is incomplete: {mixedFillCount}/560");
+                Transform[] addedTrees = mixedFill.GetComponentsInChildren<Transform>(true)
+                    .Where(item => item.name.Contains("Tree", StringComparison.Ordinal))
+                    .ToArray();
+                if (addedTrees.Length != 115 || addedTrees.Any(item => Vector3.Dot(item.up, Vector3.up) < 0.999f))
+                    throw new InvalidOperationException($"Added tree upright validation failed: count={addedTrees.Length}");
 
                 foreach (MeshRenderer renderer in root.GetComponentsInChildren<MeshRenderer>(true))
                 {
@@ -542,8 +547,8 @@ namespace ThisWillFloat.EditorTools
                     float uniformScale = Mathf.Lerp(plan.minScale, plan.maxScale, (float)random.NextDouble());
                     Vector3 scale = templateTransform.localScale * uniformScale;
                     scale.y *= plan.verticalScale;
-                    Quaternion rotation = Quaternion.FromToRotation(Vector3.up, hit.normal) *
-                                          Quaternion.Euler(0f, (float)random.NextDouble() * 360f, 0f);
+                    Quaternion rotation = CreateSurfaceAwareRotation(
+                        plan.label, hit.normal, (float)random.NextDouble() * 360f);
 
                     string instanceName = $"R70_FILL_{plan.label}_{created + 1:000}";
                     CreateVegetationInstance(fillRoot.transform, instanceName, prototypes[source], template,
@@ -626,8 +631,8 @@ namespace ThisWillFloat.EditorTools
                     float uniformScale = Mathf.Lerp(plan.minScale, plan.maxScale, (float)random.NextDouble());
                     Vector3 scale = templateTransform.localScale * uniformScale;
                     scale.y *= plan.verticalScale;
-                    Quaternion rotation = Quaternion.FromToRotation(Vector3.up, hit.normal) *
-                                          Quaternion.Euler(0f, (float)random.NextDouble() * 360f, 0f);
+                    Quaternion rotation = CreateSurfaceAwareRotation(
+                        plan.label, hit.normal, (float)random.NextDouble() * 360f);
                     CreateVegetationInstance(parent, $"R70_{plan.label}_{created + 1:000}", prototypes[source],
                         template, candidate, rotation, scale, materials);
                     positions.Add(candidate);
@@ -638,6 +643,21 @@ namespace ThisWillFloat.EditorTools
                     throw new InvalidOperationException($"Only created {created}/{plan.count} targeted right-flank instances for {plan.label}");
             }
             return total;
+        }
+
+        private static Quaternion CreateSurfaceAwareRotation(string label, Vector3 surfaceNormal, float yaw)
+        {
+            // Tree trunks grow against gravity, not perpendicular to a steep
+            // volcano face. Low foliage can conform to the terrain, while bush
+            // and understory tilt is deliberately restrained.
+            float normalAlignment = label.Contains("Tree", StringComparison.Ordinal) ? 0f :
+                label.Contains("Understory", StringComparison.Ordinal) ? 0.18f :
+                label.Contains("Bush", StringComparison.Ordinal) ? 0.35f : 0.82f;
+            Quaternion slopeRotation = Quaternion.Slerp(
+                Quaternion.identity,
+                Quaternion.FromToRotation(Vector3.up, surfaceNormal),
+                normalAlignment);
+            return slopeRotation * Quaternion.Euler(0f, yaw, 0f);
         }
 
         private static float HorizontalDistance(Vector3 a, Vector3 b) =>
