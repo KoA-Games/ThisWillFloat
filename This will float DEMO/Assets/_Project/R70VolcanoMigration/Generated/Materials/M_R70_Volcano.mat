@@ -23,6 +23,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _AshMap:
+        m_Texture: {fileID: 2800000, guid: 985a57a9907b44f31b19b1a96a2e31f8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BaseMap:
         m_Texture: {fileID: 2800000, guid: ffb8503a1249448ed9f4dd6e0db2f9e8, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -41,9 +45,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _MacroColorStrength: 0.18
+    - _AshScale: 2.35
+    - _AshStrength: 0.42
+    - _MacroColorStrength: 0.28
     - _MacroStrength: 0.34
-    - _NormalStrength: 0.58
+    - _NormalStrength: 1.05
     - _Roughness: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}

@@ -98,8 +98,8 @@ namespace ThisWillFloat.EditorTools
 
                 Transform mixedFill = vegetation.Find("R70_LowerGreen_MixedFill");
                 int mixedFillCount = mixedFill?.GetComponentsInChildren<MeshRenderer>(true).Length ?? 0;
-                if (mixedFillCount != 410)
-                    throw new InvalidOperationException($"Lower-green mixed fill is incomplete: {mixedFillCount}/410");
+                if (mixedFillCount != 560)
+                    throw new InvalidOperationException($"Lower-green mixed fill is incomplete: {mixedFillCount}/560");
 
                 foreach (MeshRenderer renderer in root.GetComponentsInChildren<MeshRenderer>(true))
                 {
@@ -128,7 +128,14 @@ namespace ThisWillFloat.EditorTools
                 if (normalImporter == null || normalImporter.maxTextureSize < 4096 || normalImporter.textureCompression != TextureImporterCompression.Uncompressed)
                     throw new InvalidOperationException("R70 volcano normal is not imported as uncompressed 4K");
 
-                Debug.Log($"R70_UNITY_MIGRATION_VALIDATION_PASS scene={scene.path} renderers={renderers} meshFilters={meshFilters} mixedFill={mixedFillCount} vegetationShadowCasters={vegetationShadowCasters} shadowDistance={shadowDistance} shadowResolution={shadowResolution} cascades={cascadeCount} normalMaxSize={normalImporter.maxTextureSize}");
+                Material volcanoMaterial = volcano.GetComponentInChildren<MeshRenderer>(true)?.sharedMaterial;
+                if (volcanoMaterial == null || volcanoMaterial.GetTexture("_AshMap") == null ||
+                    volcanoMaterial.GetFloat("_NormalStrength") < 1.0f ||
+                    volcanoMaterial.GetFloat("_MacroColorStrength") < 0.27f ||
+                    volcanoMaterial.GetFloat("_AshStrength") < 0.4f)
+                    throw new InvalidOperationException("R70 volcano layered material calibration is incomplete");
+
+                Debug.Log($"R70_UNITY_MIGRATION_VALIDATION_PASS scene={scene.path} renderers={renderers} meshFilters={meshFilters} mixedFill={mixedFillCount} vegetationShadowCasters={vegetationShadowCasters} shadowDistance={shadowDistance} shadowResolution={shadowResolution} cascades={cascadeCount} normalMaxSize={normalImporter.maxTextureSize} ashLayer=enabled");
             }
             catch (Exception exception)
             {
@@ -332,10 +339,13 @@ namespace ThisWillFloat.EditorTools
             material.SetTexture("_NormalMap", AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_Normal.png"));
             material.SetTexture("_RoughnessMap", AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_Roughness.png"));
             material.SetTexture("_MacroMap", AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_MacroRelief.png"));
+            material.SetTexture("_AshMap", AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_ErodedAsh.png"));
             material.SetColor("_BaseColor", Color.white);
-            material.SetFloat("_NormalStrength", 0.58f);
+            material.SetFloat("_NormalStrength", 1.05f);
             material.SetFloat("_Roughness", 1.0f);
-            material.SetFloat("_MacroColorStrength", 0.18f);
+            material.SetFloat("_MacroColorStrength", 0.28f);
+            material.SetFloat("_AshStrength", 0.42f);
+            material.SetFloat("_AshScale", 2.35f);
             EditorUtility.SetDirty(material);
             return material;
         }
@@ -547,10 +557,87 @@ namespace ThisWillFloat.EditorTools
                     throw new InvalidOperationException($"Only created {created}/{plan.count} lower fill instances for {plan.label}");
             }
 
+            int targetedFlankCount = BuildTargetedRightFlankFill(
+                fillRoot.transform, terrainCollider, templatesBySource, prototypes, transforms, materials);
+            totalCreated += targetedFlankCount;
+
             if (temporaryCollider)
                 UnityEngine.Object.DestroyImmediate(terrainCollider);
 
-            Debug.Log($"R70_LOWER_GREEN_MIXED_FILL created={totalCreated} anchors={lowerAnchors.Count} groundcover=150 bushes=100 understory=80 smallTrees=50 mediumTrees=30");
+            Debug.Log($"R70_LOWER_GREEN_MIXED_FILL created={totalCreated} anchors={lowerAnchors.Count} general=410 targetedRightFlank={targetedFlankCount}");
+        }
+
+        private static int BuildTargetedRightFlankFill(
+            Transform parent,
+            MeshCollider terrainCollider,
+            Dictionary<string, List<Placement>> templatesBySource,
+            Dictionary<string, Mesh> prototypes,
+            Dictionary<string, Transform> transforms,
+            Dictionary<string, Material> materials)
+        {
+            // Camera-right lower flank was intentionally left open during the ring
+            // cleanup, but the remaining opening is too broad. These three unequal,
+            // overlapping pockets fill its interior without completing a circular
+            // belt around the island.
+            Vector2[] centers =
+            {
+                new Vector2(-58f, 15f),
+                new Vector2(-68f, 2f),
+                new Vector2(-50f, 28f),
+            };
+            var plans = new[]
+            {
+                new FillPlan("FlankGroundcover", 55, new[] { "R70SRC_011", "R70SRC_014", "R70SRC_017", "R70SRC_020", "R70SRC_023", "R70SRC_026", "R70SRC_029" }, 1.1f, 0f, 0f, 14.0f, 0.80f, 0.86f, 1.16f),
+                new FillPlan("FlankBush",       35, new[] { "R70SRC_003", "R70SRC_004", "R70SRC_005", "R70SRC_006" }, 1.7f, 0f, 0f, 13.0f, 0.88f, 0.80f, 1.08f),
+                new FillPlan("FlankUnderstory", 25, new[] { "R70SRC_159", "R70SRC_160", "R70SRC_161", "R70SRC_162", "R70SRC_163", "R70SRC_164", "R70SRC_165", "R70SRC_166" }, 2.0f, 0f, 0f, 12.0f, 0.92f, 0.76f, 1.02f),
+                new FillPlan("FlankSmallTree",  25, new[] { "R70SRC_118", "R70SRC_137", "R70SRC_149", "R70SRC_154" }, 2.7f, 0f, 0f, 10.5f, 0.92f, 0.76f, 0.98f),
+                new FillPlan("FlankMediumTree", 10, new[] { "R70SRC_106", "R70SRC_109", "R70SRC_112", "R70SRC_115", "R70SRC_123", "R70SRC_129" }, 3.8f, 0f, 0f, 8.5f, 0.84f, 0.62f, 0.80f),
+            };
+
+            var random = new System.Random(70421);
+            int total = 0;
+            foreach (FillPlan plan in plans)
+            {
+                var positions = new List<Vector3>();
+                string[] validSources = plan.sources.Where(templatesBySource.ContainsKey).ToArray();
+                int created = 0;
+                int attempts = 0;
+                while (created < plan.count && attempts++ < plan.count * 60)
+                {
+                    int centerIndex = random.Next(centers.Length);
+                    Vector2 center = centers[centerIndex];
+                    float angle = (float)(random.NextDouble() * Mathf.PI * 2f);
+                    float radial = Mathf.Sqrt((float)random.NextDouble());
+                    float width = centerIndex == 0 ? 13f : centerIndex == 1 ? 10f : 9f;
+                    float depth = centerIndex == 0 ? 10f : centerIndex == 1 ? 8f : 11f;
+                    float x = center.x + Mathf.Cos(angle) * width * radial;
+                    float z = center.y + Mathf.Sin(angle) * depth * radial;
+                    Vector3 rayOrigin = new Vector3(x, 120f, z);
+                    if (!terrainCollider.Raycast(new Ray(rayOrigin, Vector3.down), out RaycastHit hit, 220f)) continue;
+                    if (hit.point.y > plan.maxHeight || hit.normal.y < 0.43f) continue;
+                    float radius = new Vector2(hit.point.x, hit.point.z).magnitude;
+                    if (radius < 35f || radius > 74f) continue;
+                    Vector3 candidate = hit.point + hit.normal * 0.035f;
+                    if (positions.Any(position => HorizontalDistance(position, candidate) < plan.minSpacing)) continue;
+
+                    string source = validSources[random.Next(validSources.Length)];
+                    Placement template = templatesBySource[source][random.Next(templatesBySource[source].Count)];
+                    Transform templateTransform = transforms[template.name];
+                    float uniformScale = Mathf.Lerp(plan.minScale, plan.maxScale, (float)random.NextDouble());
+                    Vector3 scale = templateTransform.localScale * uniformScale;
+                    scale.y *= plan.verticalScale;
+                    Quaternion rotation = Quaternion.FromToRotation(Vector3.up, hit.normal) *
+                                          Quaternion.Euler(0f, (float)random.NextDouble() * 360f, 0f);
+                    CreateVegetationInstance(parent, $"R70_{plan.label}_{created + 1:000}", prototypes[source],
+                        template, candidate, rotation, scale, materials);
+                    positions.Add(candidate);
+                    created++;
+                    total++;
+                }
+                if (created < plan.count)
+                    throw new InvalidOperationException($"Only created {created}/{plan.count} targeted right-flank instances for {plan.label}");
+            }
+            return total;
         }
 
         private static float HorizontalDistance(Vector3 a, Vector3 b) =>

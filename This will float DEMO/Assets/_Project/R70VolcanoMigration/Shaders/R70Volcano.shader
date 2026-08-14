@@ -6,10 +6,13 @@ Shader "This Will Float/R70 Volcano"
         [Normal] _NormalMap("Baked R70 Tangent Normal", 2D) = "bump" {}
         _RoughnessMap("Baked R70 Roughness", 2D) = "white" {}
         _MacroMap("R70 Macro Relief", 2D) = "gray" {}
+        _AshMap("R70 Eroded Ash Detail", 2D) = "gray" {}
         _BaseColor("Tint", Color) = (1, 1, 1, 1)
         _NormalStrength("Normal Strength", Range(0, 2)) = 1
         _Roughness("Roughness", Range(0, 1)) = 0.9
         _MacroColorStrength("Macro Color Relief", Range(0, 0.3)) = 0.12
+        _AshStrength("Eroded Ash Strength", Range(0, 0.6)) = 0.25
+        _AshScale("Eroded Ash Generated Scale", Range(0.5, 5)) = 2.35
     }
     SubShader
     {
@@ -32,12 +35,15 @@ Shader "This Will Float/R70 Volcano"
             TEXTURE2D(_NormalMap); SAMPLER(sampler_NormalMap);
             TEXTURE2D(_RoughnessMap); SAMPLER(sampler_RoughnessMap);
             TEXTURE2D(_MacroMap); SAMPLER(sampler_MacroMap);
+            TEXTURE2D(_AshMap); SAMPLER(sampler_AshMap);
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseMap_ST;
                 half4 _BaseColor;
                 half _NormalStrength;
                 half _Roughness;
                 half _MacroColorStrength;
+                half _AshStrength;
+                half _AshScale;
             CBUFFER_END
 
             struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float4 tangentOS:TANGENT; float2 uv:TEXCOORD0; };
@@ -63,6 +69,19 @@ Shader "This Will Float/R70 Volcano"
                 half3 baseColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv).rgb * _BaseColor.rgb;
                 half macro = SAMPLE_TEXTURE2D(_MacroMap, sampler_MacroMap, input.uv).r;
                 baseColor *= 1.0h + (macro - 0.5h) * _MacroColorStrength;
+                // Blender's Pass04C uses Generated coordinates scaled 2.35 for
+                // the eroded-ash layer. Reintroduce its fine directional color
+                // variation after the 2K albedo bake, but suppress it over the
+                // deliberately green foothill regions.
+                float2 ashUV = float2((input.positionWS.x + 80.0) / 160.0,
+                                      input.positionWS.y / 75.0) * _AshScale;
+                half3 ashColor = SAMPLE_TEXTURE2D(_AshMap, sampler_AshMap, ashUV).rgb;
+                half greenMask = saturate((baseColor.g - max(baseColor.r, baseColor.b)) * 6.0h);
+                half upperRockMask = smoothstep(8.0h, 34.0h, input.positionWS.y);
+                half ashMask = (0.18h + upperRockMask * 0.82h) * (1.0h - greenMask * 0.88h) * _AshStrength;
+                half ashValue = dot(ashColor, half3(0.299h, 0.587h, 0.114h));
+                baseColor *= lerp(1.0h, lerp(0.78h, 1.22h, ashValue), ashMask);
+                baseColor = lerp(baseColor, ashColor, ashMask * 0.16h);
                 half3 normalTS = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, input.uv), _NormalStrength);
                 half3 bitangentWS = input.tangentWS.w * cross(input.normalWS, input.tangentWS.xyz);
                 half3 normalWS = normalize(TransformTangentToWorld(normalTS, half3x3(input.tangentWS.xyz, bitangentWS, input.normalWS)));
