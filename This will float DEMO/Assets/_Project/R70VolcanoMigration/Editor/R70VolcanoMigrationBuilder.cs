@@ -96,6 +96,11 @@ namespace ThisWillFloat.EditorTools
                 if (renderers < 1_978 || meshFilters < 1_978)
                     throw new InvalidOperationException($"Unexpected mesh count: renderers={renderers}, filters={meshFilters}");
 
+                Transform mixedFill = vegetation.Find("R70_LowerGreen_MixedFill");
+                int mixedFillCount = mixedFill?.GetComponentsInChildren<MeshRenderer>(true).Length ?? 0;
+                if (mixedFillCount != 410)
+                    throw new InvalidOperationException($"Lower-green mixed fill is incomplete: {mixedFillCount}/410");
+
                 foreach (MeshRenderer renderer in root.GetComponentsInChildren<MeshRenderer>(true))
                 {
                     if (renderer.sharedMaterials.Any(material => material == null))
@@ -123,7 +128,7 @@ namespace ThisWillFloat.EditorTools
                 if (normalImporter == null || normalImporter.maxTextureSize < 4096 || normalImporter.textureCompression != TextureImporterCompression.Uncompressed)
                     throw new InvalidOperationException("R70 volcano normal is not imported as uncompressed 4K");
 
-                Debug.Log($"R70_UNITY_MIGRATION_VALIDATION_PASS scene={scene.path} renderers={renderers} meshFilters={meshFilters} vegetationShadowCasters={vegetationShadowCasters} shadowDistance={shadowDistance} shadowResolution={shadowResolution} cascades={cascadeCount} normalMaxSize={normalImporter.maxTextureSize}");
+                Debug.Log($"R70_UNITY_MIGRATION_VALIDATION_PASS scene={scene.path} renderers={renderers} meshFilters={meshFilters} mixedFill={mixedFillCount} vegetationShadowCasters={vegetationShadowCasters} shadowDistance={shadowDistance} shadowResolution={shadowResolution} cascades={cascadeCount} normalMaxSize={normalImporter.maxTextureSize}");
             }
             catch (Exception exception)
             {
@@ -414,6 +419,8 @@ namespace ThisWillFloat.EditorTools
             vegetationRoot.transform.SetParent(parent, false);
             vegetationRoot.isStatic = true;
 
+            var activePlacements = new List<Placement>();
+
             foreach (Placement placement in placementSet.placements)
             {
                 // DUF_01-04 are internal shadow fillers. In the full-volcano R70
@@ -428,26 +435,185 @@ namespace ThisWillFloat.EditorTools
                 if (!transforms.TryGetValue(placement.name, out Transform sourceTransform))
                     throw new InvalidOperationException("Missing placement transform: " + placement.name);
 
-                GameObject instance = new GameObject(placement.name);
-                instance.transform.SetParent(vegetationRoot.transform, false);
-                instance.transform.localPosition = sourceTransform.localPosition;
-                instance.transform.localRotation = sourceTransform.localRotation;
-                instance.transform.localScale = sourceTransform.localScale;
-                instance.isStatic = true;
+                CreateVegetationInstance(vegetationRoot.transform, placement.name, mesh, placement,
+                    sourceTransform.localPosition, sourceTransform.localRotation, sourceTransform.localScale, materials);
+                activePlacements.Add(placement);
+            }
 
-                MeshFilter filter = instance.AddComponent<MeshFilter>();
-                filter.sharedMesh = mesh;
-                MeshRenderer renderer = instance.AddComponent<MeshRenderer>();
-                renderer.sharedMaterials = placement.materials.Select(name =>
+            BuildLowerGreenFill(vegetationRoot.transform, activePlacements, prototypes, transforms, materials);
+        }
+
+        private static void BuildLowerGreenFill(
+            Transform vegetationRoot,
+            List<Placement> activePlacements,
+            Dictionary<string, Mesh> prototypes,
+            Dictionary<string, Transform> transforms,
+            Dictionary<string, Material> materials)
+        {
+            GameObject fillRoot = new GameObject("R70_LowerGreen_MixedFill");
+            fillRoot.transform.SetParent(vegetationRoot, false);
+            fillRoot.isStatic = true;
+
+            MeshFilter volcanoFilter = GameObject.Find("Volcano")?
+                .GetComponentsInChildren<MeshFilter>(true)
+                .FirstOrDefault(item => item.sharedMesh != null);
+            if (volcanoFilter == null)
+                throw new InvalidOperationException("Volcano surface mesh unavailable for lower-green fill");
+            MeshCollider terrainCollider = volcanoFilter.gameObject.GetComponent<MeshCollider>();
+            bool temporaryCollider = terrainCollider == null;
+            if (temporaryCollider)
+            {
+                terrainCollider = volcanoFilter.gameObject.AddComponent<MeshCollider>();
+                terrainCollider.sharedMesh = volcanoFilter.sharedMesh;
+            }
+            Physics.SyncTransforms();
+
+            Dictionary<string, List<Placement>> templatesBySource = activePlacements
+                .GroupBy(item => item.source, StringComparer.Ordinal)
+                .ToDictionary(group => group.Key, group => group.ToList(), StringComparer.Ordinal);
+
+            List<Transform> lowerAnchors = activePlacements
+                .Select(item => transforms[item.name])
+                .Where(item => item.localPosition.y <= 14.5f &&
+                               new Vector2(item.localPosition.x, item.localPosition.z).magnitude >= 32f)
+                .ToList();
+            if (lowerAnchors.Count < 20)
+                throw new InvalidOperationException("Insufficient lower-green anchors for mixed fill");
+
+            var plans = new[]
+            {
+                new FillPlan("Groundcover", 150, new[] { "R70SRC_011", "R70SRC_014", "R70SRC_017", "R70SRC_020", "R70SRC_023", "R70SRC_026", "R70SRC_029" }, 1.25f, 2.5f, 15.0f, 15.0f, 0.80f, 0.86f, 1.18f),
+                new FillPlan("Bush",       100, new[] { "R70SRC_003", "R70SRC_004", "R70SRC_005", "R70SRC_006" },                                            1.8f, 3.5f, 13.0f, 14.5f, 0.88f, 0.80f, 1.10f),
+                new FillPlan("Understory",  80, new[] { "R70SRC_159", "R70SRC_160", "R70SRC_161", "R70SRC_162", "R70SRC_163", "R70SRC_164", "R70SRC_165", "R70SRC_166" }, 2.4f, 4.0f, 14.0f, 13.5f, 0.92f, 0.76f, 1.05f),
+                new FillPlan("SmallTree",   50, new[] { "R70SRC_118", "R70SRC_137", "R70SRC_149", "R70SRC_154" }, 3.2f, 4.5f, 14.0f, 12.0f, 0.92f, 0.76f, 0.98f),
+                new FillPlan("MediumTree",  30, new[] { "R70SRC_106", "R70SRC_109", "R70SRC_112", "R70SRC_115", "R70SRC_123", "R70SRC_129" }, 4.4f, 6.0f, 14.5f, 10.5f, 0.86f, 0.62f, 0.82f)
+            };
+
+            var random = new System.Random(70193);
+            int totalCreated = 0;
+
+            foreach (FillPlan plan in plans)
+            {
+                // Spacing is enforced inside each visual layer. Cross-layer overlap
+                // is intentional: low foliage must sit beneath bushes and trees so
+                // the lower green zone reads as one planted community, not samples.
+                var categoryPositions = new List<Vector3>();
+                string[] validSources = plan.sources.Where(templatesBySource.ContainsKey).ToArray();
+                if (validSources.Length == 0)
+                    throw new InvalidOperationException("No source templates for lower fill category " + plan.label);
+
+                int created = 0;
+                int attempts = 0;
+                while (created < plan.count && attempts++ < plan.count * 35)
                 {
-                    string resolvedName = ResolveVisibleFoliageMaterial(name, materials);
-                    if (!materials.TryGetValue(resolvedName, out Material material))
-                        throw new InvalidOperationException("Missing generated material: " + resolvedName);
-                    return material;
-                }).ToArray();
-                renderer.shadowCastingMode = ShadowCastingMode.On;
-                renderer.receiveShadows = true;
-                renderer.lightProbeUsage = LightProbeUsage.BlendProbes;
+                    Transform anchor = lowerAnchors[random.Next(lowerAnchors.Count)];
+                    float angle = (float)(random.NextDouble() * Mathf.PI * 2f);
+                    float distance = Mathf.Lerp(plan.minOffset, plan.maxOffset, (float)random.NextDouble());
+                    Vector3 candidate = anchor.localPosition + new Vector3(Mathf.Cos(angle) * distance, 0f, Mathf.Sin(angle) * distance);
+
+                    Vector3 rayOrigin = new Vector3(candidate.x, 120f, candidate.z);
+                    if (!terrainCollider.Raycast(new Ray(rayOrigin, Vector3.down), out RaycastHit hit, 220f))
+                        continue;
+                    candidate = hit.point + hit.normal * 0.035f;
+
+                    if (candidate.y > plan.maxHeight) continue;
+                    float radius = new Vector2(candidate.x, candidate.z).magnitude;
+                    if (radius < 31f || radius > 78f) continue;
+                    if (categoryPositions.Any(position => HorizontalDistance(position, candidate) < plan.minSpacing)) continue;
+
+                    Transform nearestAnchor = lowerAnchors
+                        .OrderBy(item => HorizontalDistance(item.localPosition, candidate))
+                        .First();
+                    if (HorizontalDistance(nearestAnchor.localPosition, candidate) > 10f) continue;
+
+                    string source = validSources[random.Next(validSources.Length)];
+                    Placement template = templatesBySource[source][random.Next(templatesBySource[source].Count)];
+                    Transform templateTransform = transforms[template.name];
+                    float uniformScale = Mathf.Lerp(plan.minScale, plan.maxScale, (float)random.NextDouble());
+                    Vector3 scale = templateTransform.localScale * uniformScale;
+                    scale.y *= plan.verticalScale;
+                    Quaternion rotation = Quaternion.FromToRotation(Vector3.up, hit.normal) *
+                                          Quaternion.Euler(0f, (float)random.NextDouble() * 360f, 0f);
+
+                    string instanceName = $"R70_FILL_{plan.label}_{created + 1:000}";
+                    CreateVegetationInstance(fillRoot.transform, instanceName, prototypes[source], template,
+                        candidate, rotation, scale, materials);
+                    categoryPositions.Add(candidate);
+                    created++;
+                    totalCreated++;
+                }
+
+                if (created < plan.count)
+                    throw new InvalidOperationException($"Only created {created}/{plan.count} lower fill instances for {plan.label}");
+            }
+
+            if (temporaryCollider)
+                UnityEngine.Object.DestroyImmediate(terrainCollider);
+
+            Debug.Log($"R70_LOWER_GREEN_MIXED_FILL created={totalCreated} anchors={lowerAnchors.Count} groundcover=150 bushes=100 understory=80 smallTrees=50 mediumTrees=30");
+        }
+
+        private static float HorizontalDistance(Vector3 a, Vector3 b) =>
+            Vector2.Distance(new Vector2(a.x, a.z), new Vector2(b.x, b.z));
+
+        private static void CreateVegetationInstance(
+            Transform parent,
+            string name,
+            Mesh mesh,
+            Placement placement,
+            Vector3 localPosition,
+            Quaternion localRotation,
+            Vector3 localScale,
+            Dictionary<string, Material> materials)
+        {
+            GameObject instance = new GameObject(name);
+            instance.transform.SetParent(parent, false);
+            instance.transform.localPosition = localPosition;
+            instance.transform.localRotation = localRotation;
+            instance.transform.localScale = localScale;
+            instance.isStatic = true;
+
+            MeshFilter filter = instance.AddComponent<MeshFilter>();
+            filter.sharedMesh = mesh;
+            MeshRenderer renderer = instance.AddComponent<MeshRenderer>();
+            renderer.sharedMaterials = placement.materials.Select(materialName =>
+            {
+                string resolvedName = ResolveVisibleFoliageMaterial(materialName, materials);
+                if (!materials.TryGetValue(resolvedName, out Material material))
+                    throw new InvalidOperationException("Missing generated material: " + resolvedName);
+                return material;
+            }).ToArray();
+            renderer.shadowCastingMode = ShadowCastingMode.On;
+            renderer.receiveShadows = true;
+            renderer.lightProbeUsage = LightProbeUsage.BlendProbes;
+        }
+
+        private sealed class FillPlan
+        {
+            public readonly string label;
+            public readonly int count;
+            public readonly string[] sources;
+            public readonly float minSpacing;
+            public readonly float minOffset;
+            public readonly float maxOffset;
+            public readonly float maxHeight;
+            public readonly float verticalScale;
+            public readonly float minScale;
+            public readonly float maxScale;
+
+            public FillPlan(string label, int count, string[] sources, float minSpacing, float minOffset,
+                float maxOffset, float maxHeight, float verticalScale, float minScale, float maxScale)
+            {
+                this.label = label;
+                this.count = count;
+                this.sources = sources;
+                this.minSpacing = minSpacing;
+                this.minOffset = minOffset;
+                this.maxOffset = maxOffset;
+                this.maxHeight = maxHeight;
+                this.verticalScale = verticalScale;
+                this.minScale = minScale;
+                this.maxScale = maxScale;
             }
         }
 
@@ -457,6 +623,7 @@ namespace ThisWillFloat.EditorTools
             // after card overlap in Unity. Preserve the mesh and physical shadow,
             // but use the approved neighbouring green value for visible foliage.
             if (name == "M_DSM_Core_Dark") return "M_DSM_Surface_Forest";
+            if (name == "M_SFP_R50_Interior_Olive") return "M_SFP_R50_Surface_MossOlive";
             if (name == "M_DUF_R50_CharcoalGreen" || name == "M_DUF_R50_DeepOlive")
                 return "M_DUF_R50_SubduedMoss";
             if (name == "M_TV_Understory_Leaf_Dark") return "M_TV_Understory_Leaf_Mid";
