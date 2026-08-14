@@ -103,8 +103,33 @@ namespace ThisWillFloat.EditorTools
                 Transform[] addedTrees = mixedFill.GetComponentsInChildren<Transform>(true)
                     .Where(item => item.name.Contains("Tree", StringComparison.Ordinal))
                     .ToArray();
-                if (addedTrees.Length != 205 || addedTrees.Any(item => Vector3.Dot(item.up, Vector3.up) < 0.999f))
-                    throw new InvalidOperationException($"Added tree upright validation failed: count={addedTrees.Length}");
+                float minimumTreeHeightRatio = float.PositiveInfinity;
+                float maximumTreeBaseGapRatio = 0f;
+                int fallenTreeCount = 0;
+                foreach (Transform addedTree in addedTrees)
+                {
+                    MeshRenderer treeRenderer = addedTree.GetComponent<MeshRenderer>();
+                    if (treeRenderer == null) { fallenTreeCount++; continue; }
+
+                    Bounds treeBounds = treeRenderer.bounds;
+                    float horizontalExtent = Mathf.Max(treeBounds.size.x, treeBounds.size.z);
+                    float heightRatio = treeBounds.size.y / Mathf.Max(horizontalExtent, 0.001f);
+                    float baseGapRatio = Mathf.Abs(treeBounds.min.y - addedTree.position.y) /
+                                         Mathf.Max(treeBounds.size.y, 0.001f);
+                    minimumTreeHeightRatio = Mathf.Min(minimumTreeHeightRatio, heightRatio);
+                    maximumTreeBaseGapRatio = Mathf.Max(maximumTreeBaseGapRatio, baseGapRatio);
+
+                    // Imported FBX tree meshes use a converted local axis, so
+                    // Transform.up is not their visual trunk direction. Validate
+                    // the rendered geometry instead: a fallen tree becomes much
+                    // wider than tall and swings its crown below the ground pivot.
+                    if (heightRatio < 0.32f || baseGapRatio > 0.28f)
+                        fallenTreeCount++;
+                }
+                if (addedTrees.Length != 205 || fallenTreeCount != 0)
+                    throw new InvalidOperationException(
+                        $"Added tree geometry validation failed: count={addedTrees.Length}, fallen={fallenTreeCount}, " +
+                        $"minHeightRatio={minimumTreeHeightRatio:F3}, maxBaseGapRatio={maximumTreeBaseGapRatio:F3}");
 
                 foreach (MeshRenderer renderer in root.GetComponentsInChildren<MeshRenderer>(true))
                 {
@@ -140,7 +165,7 @@ namespace ThisWillFloat.EditorTools
                     volcanoMaterial.GetFloat("_AshStrength") < 0.4f)
                     throw new InvalidOperationException("R70 volcano layered material calibration is incomplete");
 
-                Debug.Log($"R70_UNITY_MIGRATION_VALIDATION_PASS scene={scene.path} renderers={renderers} meshFilters={meshFilters} mixedFill={mixedFillCount} vegetationShadowCasters={vegetationShadowCasters} shadowDistance={shadowDistance} shadowResolution={shadowResolution} cascades={cascadeCount} normalMaxSize={normalImporter.maxTextureSize} ashLayer=enabled");
+                Debug.Log($"R70_UNITY_MIGRATION_VALIDATION_PASS scene={scene.path} renderers={renderers} meshFilters={meshFilters} mixedFill={mixedFillCount} addedTrees={addedTrees.Length} fallenTrees={fallenTreeCount} minTreeHeightRatio={minimumTreeHeightRatio:F3} maxTreeBaseGapRatio={maximumTreeBaseGapRatio:F3} vegetationShadowCasters={vegetationShadowCasters} shadowDistance={shadowDistance} shadowResolution={shadowResolution} cascades={cascadeCount} normalMaxSize={normalImporter.maxTextureSize} ashLayer=enabled");
             }
             catch (Exception exception)
             {
@@ -549,7 +574,8 @@ namespace ThisWillFloat.EditorTools
                     Vector3 scale = templateTransform.localScale * uniformScale;
                     scale.y *= plan.verticalScale;
                     Quaternion rotation = CreateSurfaceAwareRotation(
-                        plan.label, hit.normal, (float)random.NextDouble() * 360f);
+                        plan.label, hit.normal, (float)random.NextDouble() * 360f,
+                        templateTransform.localRotation);
 
                     string instanceName = $"R70_FILL_{plan.label}_{created + 1:000}";
                     CreateVegetationInstance(fillRoot.transform, instanceName, prototypes[source], template,
@@ -633,7 +659,8 @@ namespace ThisWillFloat.EditorTools
                     Vector3 scale = templateTransform.localScale * uniformScale;
                     scale.y *= plan.verticalScale;
                     Quaternion rotation = CreateSurfaceAwareRotation(
-                        plan.label, hit.normal, (float)random.NextDouble() * 360f);
+                        plan.label, hit.normal, (float)random.NextDouble() * 360f,
+                        templateTransform.localRotation);
                     CreateVegetationInstance(parent, $"R70_{plan.label}_{created + 1:000}", prototypes[source],
                         template, candidate, rotation, scale, materials);
                     positions.Add(candidate);
@@ -706,7 +733,8 @@ namespace ThisWillFloat.EditorTools
                     Vector3 scale = templateTransform.localScale * uniformScale;
                     scale.y *= plan.verticalScale;
                     Quaternion rotation = CreateSurfaceAwareRotation(
-                        plan.label, hit.normal, (float)random.NextDouble() * 360f);
+                        plan.label, hit.normal, (float)random.NextDouble() * 360f,
+                        templateTransform.localRotation);
                     CreateVegetationInstance(parent, $"R70_{plan.label}_{created + 1:000}", prototypes[source],
                         template, candidate, rotation, scale, materials);
                     positions.Add(candidate);
@@ -719,14 +747,20 @@ namespace ThisWillFloat.EditorTools
             return total;
         }
 
-        private static Quaternion CreateSurfaceAwareRotation(string label, Vector3 surfaceNormal, float yaw)
+        private static Quaternion CreateSurfaceAwareRotation(
+            string label, Vector3 surfaceNormal, float yaw, Quaternion templateRotation)
         {
-            // Tree trunks grow against gravity, not perpendicular to a steep
-            // volcano face. Low foliage can conform to the terrain, while bush
-            // and understory tilt is deliberately restrained.
-            float normalAlignment = label.Contains("Tree", StringComparison.Ordinal) ? 0f :
-                label.Contains("Understory", StringComparison.Ordinal) ? 0.18f :
-                label.Contains("Bush", StringComparison.Ordinal) ? 0.35f : 0.82f;
+            // Preserve the imported FBX orientation that makes the source mesh
+            // visually upright. Discarding it can leave a transform whose Up is
+            // vertical while the trunk geometry itself lies sideways.
+            bool uprightAsset = label.Contains("Tree", StringComparison.Ordinal) ||
+                                label.Contains("Understory", StringComparison.Ordinal) ||
+                                label.Contains("Bush", StringComparison.Ordinal);
+            if (uprightAsset)
+                return Quaternion.AngleAxis(yaw, Vector3.up) * templateRotation;
+
+            // Only broad ground-hugging foliage conforms strongly to the slope.
+            float normalAlignment = 0.82f;
             Quaternion slopeRotation = Quaternion.Slerp(
                 Quaternion.identity,
                 Quaternion.FromToRotation(Vector3.up, surfaceNormal),
