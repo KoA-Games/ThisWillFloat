@@ -98,8 +98,8 @@ namespace ThisWillFloat.EditorTools
 
                 Transform mixedFill = vegetation.Find("R70_LowerGreen_MixedFill");
                 int mixedFillCount = mixedFill?.GetComponentsInChildren<MeshRenderer>(true).Length ?? 0;
-                if (mixedFillCount != 1_810)
-                    throw new InvalidOperationException($"Lower-green mixed fill is incomplete: {mixedFillCount}/1810");
+                if (mixedFillCount != 2_440)
+                    throw new InvalidOperationException($"Lower-green mixed fill is incomplete: {mixedFillCount}/2440");
                 Transform[] addedTrees = mixedFill.GetComponentsInChildren<Transform>(true)
                     .Where(item => item.name.Contains("Tree", StringComparison.Ordinal))
                     .ToArray();
@@ -126,7 +126,7 @@ namespace ThisWillFloat.EditorTools
                     if (heightRatio < 0.32f || baseGapRatio > 0.28f)
                         fallenTreeCount++;
                 }
-                if (addedTrees.Length != 335 || fallenTreeCount != 0)
+                if (addedTrees.Length != 465 || fallenTreeCount != 0)
                     throw new InvalidOperationException(
                         $"Added tree geometry validation failed: count={addedTrees.Length}, fallen={fallenTreeCount}, " +
                         $"minHeightRatio={minimumTreeHeightRatio:F3}, maxBaseGapRatio={maximumTreeBaseGapRatio:F3}");
@@ -138,10 +138,43 @@ namespace ThisWillFloat.EditorTools
                     .Count(renderer => renderer.name.StartsWith("R70_FINGER_", StringComparison.Ordinal));
                 int lowerGapFillCount = mixedFill.GetComponentsInChildren<MeshRenderer>(true)
                     .Count(renderer => renderer.name.StartsWith("R70_GAP_", StringComparison.Ordinal));
-                if (addedUpperVegetation != 0 || addedUpperTrees != 0 || fingerCount != 340 || lowerGapFillCount != 420)
+                int rearCommunityCount = mixedFill.GetComponentsInChildren<MeshRenderer>(true)
+                    .Count(renderer => renderer.name.StartsWith("R70_REAR_COMMUNITY_", StringComparison.Ordinal));
+                int rightOpenSlopeCount = mixedFill.GetComponentsInChildren<MeshRenderer>(true)
+                    .Count(renderer => renderer.name.StartsWith("R70_RIGHT_OPEN_SLOPE_", StringComparison.Ordinal));
+                if (addedUpperVegetation != 0 || addedUpperTrees != 0 || fingerCount != 420 ||
+                    lowerGapFillCount != 420 || rearCommunityCount != 300 || rightOpenSlopeCount != 250)
                     throw new InvalidOperationException(
                         $"Elevation hierarchy failed: upperVegetation={addedUpperVegetation}, " +
-                        $"upperTrees={addedUpperTrees}, fingers={fingerCount}/340, lowerGapFill={lowerGapFillCount}/420");
+                        $"upperTrees={addedUpperTrees}, fingers={fingerCount}/420, " +
+                        $"lowerGapFill={lowerGapFillCount}/420, rearCommunity={rearCommunityCount}/300, " +
+                        $"rightOpenSlope={rightOpenSlopeCount}/250");
+
+                MeshRenderer[] vegetationRenderers = vegetation.GetComponentsInChildren<MeshRenderer>(true);
+                int[] outerWoodyBins = new int[24];
+                int upperRockWoody = 0;
+                foreach (MeshRenderer renderer in vegetationRenderers)
+                {
+                    bool woody = renderer.sharedMaterials.Any(material => material != null &&
+                        material.name.Contains("Bark", StringComparison.OrdinalIgnoreCase));
+                    if (!woody) continue;
+                    Vector3 position = renderer.transform.position;
+                    if (position.y > 37f) upperRockWoody++;
+                    float radius = new Vector2(position.x, position.z).magnitude;
+                    if (radius < 42f || radius > 78f || position.y > 18f) continue;
+                    float angle = Mathf.Atan2(position.z, position.x) * Mathf.Rad2Deg;
+                    int bin = Mathf.Clamp(Mathf.FloorToInt((angle + 180f) / 360f * outerWoodyBins.Length),
+                        0, outerWoodyBins.Length - 1);
+                    outerWoodyBins[bin]++;
+                }
+                float averageWoodyPerBin = (float)outerWoodyBins.Average();
+                int sparseWoodyBins = outerWoodyBins.Count(count => count <= averageWoodyPerBin * 0.55f);
+                int denseWoodyBins = outerWoodyBins.Count(count => count >= averageWoodyPerBin * 1.25f);
+                if (upperRockWoody != 0 || sparseWoodyBins < 4 || denseWoodyBins < 3)
+                    throw new InvalidOperationException(
+                        $"Canopy-ring hierarchy failed: upperRockWoody={upperRockWoody}, " +
+                        $"sparseBins={sparseWoodyBins}/24, denseBins={denseWoodyBins}/24, " +
+                        $"avg={averageWoodyPerBin:F2}, bins=[{string.Join(",", outerWoodyBins)}]");
 
                 foreach (MeshRenderer renderer in root.GetComponentsInChildren<MeshRenderer>(true))
                 {
@@ -177,7 +210,7 @@ namespace ThisWillFloat.EditorTools
                     volcanoMaterial.GetFloat("_AshStrength") < 0.4f)
                     throw new InvalidOperationException("R70 volcano layered material calibration is incomplete");
 
-                Debug.Log($"R70_UNITY_MIGRATION_VALIDATION_PASS scene={scene.path} renderers={renderers} meshFilters={meshFilters} mixedFill={mixedFillCount} addedTrees={addedTrees.Length} fallenTrees={fallenTreeCount} upperVegetation={addedUpperVegetation} upperTrees={addedUpperTrees} fingerInstances={fingerCount} lowerGapFill={lowerGapFillCount} minTreeHeightRatio={minimumTreeHeightRatio:F3} maxTreeBaseGapRatio={maximumTreeBaseGapRatio:F3} vegetationShadowCasters={vegetationShadowCasters} shadowDistance={shadowDistance} shadowResolution={shadowResolution} cascades={cascadeCount} normalMaxSize={normalImporter.maxTextureSize} ashLayer=enabled");
+                Debug.Log($"R70_UNITY_MIGRATION_VALIDATION_PASS scene={scene.path} renderers={renderers} meshFilters={meshFilters} mixedFill={mixedFillCount} addedTrees={addedTrees.Length} fallenTrees={fallenTreeCount} upperVegetation={addedUpperVegetation} upperTrees={addedUpperTrees} fingerInstances={fingerCount} lowerGapFill={lowerGapFillCount} rearCommunity={rearCommunityCount} rightOpenSlope={rightOpenSlopeCount} upperRockWoody={upperRockWoody} sparseWoodyBins={sparseWoodyBins} denseWoodyBins={denseWoodyBins} woodyBinAverage={averageWoodyPerBin:F2} minTreeHeightRatio={minimumTreeHeightRatio:F3} maxTreeBaseGapRatio={maximumTreeBaseGapRatio:F3} vegetationShadowCasters={vegetationShadowCasters} shadowDistance={shadowDistance} shadowResolution={shadowResolution} cascades={cascadeCount} normalMaxSize={normalImporter.maxTextureSize} ashLayer=enabled");
             }
             catch (Exception exception)
             {
@@ -567,7 +600,7 @@ namespace ThisWillFloat.EditorTools
                 // The approved source layout contains several useful forest
                 // communities, but some lower tree canopies join into a near-
                 // continuous outer arc in top view. Thin only the large woody
-                // canopy layer in three unequal corridors. Bushes, ferns and
+                // canopy layer in four unequal corridors. Bushes, ferns and
                 // groundcover remain, so these are ecological clearings rather
                 // than empty cuts through the green terrain.
                 if (!ShouldKeepOriginalTreePlacement(placement, sourceTransform.localPosition))
@@ -596,9 +629,10 @@ namespace ThisWillFloat.EditorTools
 
             float angle = Mathf.Atan2(position.z, position.x) * Mathf.Rad2Deg;
             float removal = 0f;
-            removal = Mathf.Max(removal, AngularCorridorRemoval(angle,  88f, 15f, 0.82f));
-            removal = Mathf.Max(removal, AngularCorridorRemoval(angle, 143f, 12f, 0.72f));
-            removal = Mathf.Max(removal, AngularCorridorRemoval(angle, -112f, 17f, 0.76f));
+            removal = Mathf.Max(removal, AngularCorridorRemoval(angle,  88f, 20f, 0.95f));
+            removal = Mathf.Max(removal, AngularCorridorRemoval(angle, 143f, 18f, 0.88f));
+            removal = Mathf.Max(removal, AngularCorridorRemoval(angle, -112f, 22f, 0.90f));
+            removal = Mathf.Max(removal, AngularCorridorRemoval(angle,  20f, 16f, 0.82f));
             if (removal <= 0f) return true;
 
             int signature = 17;
@@ -740,10 +774,20 @@ namespace ThisWillFloat.EditorTools
                 prototypes, transforms, materials);
             totalCreated += lowerShelfGapCount;
 
+            int rearLowerCommunityCount = BuildRearLowerCommunityFill(
+                fillRoot.transform, terrainCollider, templatesBySource,
+                prototypes, transforms, materials);
+            totalCreated += rearLowerCommunityCount;
+
+            int rightOpenSlopeCount = BuildRightOpenSlopeUnderstoryFill(
+                fillRoot.transform, terrainCollider, templatesBySource,
+                prototypes, transforms, materials);
+            totalCreated += rightOpenSlopeCount;
+
             if (temporaryCollider)
                 UnityEngine.Object.DestroyImmediate(terrainCollider);
 
-            Debug.Log($"R70_LOWER_GREEN_MIXED_FILL created={totalCreated} anchors={lowerAnchors.Count} general=410 targetedRightFlank={targetedFlankCount} albedoGreenCoverage={greenCoverageCount} transitionFingers={transitionFingerCount} lowerShelfGapFill={lowerShelfGapCount}");
+            Debug.Log($"R70_LOWER_GREEN_MIXED_FILL created={totalCreated} anchors={lowerAnchors.Count} general=410 targetedRightFlank={targetedFlankCount} albedoGreenCoverage={greenCoverageCount} transitionFingers={transitionFingerCount} lowerShelfGapFill={lowerShelfGapCount} rearLowerCommunity={rearLowerCommunityCount} rightOpenSlope={rightOpenSlopeCount}");
         }
 
         private static int BuildAlbedoGreenCoverageFill(
@@ -853,22 +897,23 @@ namespace ThisWillFloat.EditorTools
             if (albedo == null || !albedo.isReadable)
                 throw new InvalidOperationException("Readable R70 albedo is required for transition fingers");
 
-            // Four deliberately unequal, curved flows. They start inside the
+            // Five deliberately unequal, curved flows. They start inside the
             // lower forest and narrow upslope; no matching opposite-side flow is
             // created, so the result cannot become an even contour ring.
             var fingers = new[]
             {
                 new FingerDefinition(-142f, 66f, 31f, 10.5f, 3.2f,  13f),
                 new FingerDefinition( -38f, 64f, 35f,  8.0f, 2.8f, -10f),
+                new FingerDefinition(  18f, 67f, 36f, 13.0f, 3.0f, -14f),
                 new FingerDefinition(  52f, 61f, 29f, 11.5f, 3.6f,  17f),
                 new FingerDefinition( 151f, 62f, 38f,  7.2f, 2.5f,  -8f),
             };
             var plans = new[]
             {
-                new FillPlan("FingerGroundcover", 100, new[] { "R70SRC_011", "R70SRC_014", "R70SRC_017", "R70SRC_020", "R70SRC_023", "R70SRC_026", "R70SRC_029" }, 0.94f, 0f, 0f, 36.0f, 0.80f, 0.74f, 1.06f),
-                new FillPlan("FingerBush",       110, new[] { "R70SRC_003", "R70SRC_004", "R70SRC_005", "R70SRC_006" }, 1.30f, 0f, 0f, 31.0f, 0.88f, 0.76f, 1.14f),
-                new FillPlan("FingerUnderstory",  90, new[] { "R70SRC_159", "R70SRC_160", "R70SRC_161", "R70SRC_162", "R70SRC_163", "R70SRC_164", "R70SRC_165", "R70SRC_166" }, 1.62f, 0f, 0f, 28.0f, 0.92f, 0.74f, 1.08f),
-                new FillPlan("FingerSmallTree",   30, new[] { "R70SRC_118", "R70SRC_137", "R70SRC_149", "R70SRC_154" }, 3.10f, 0f, 0f, 22.0f, 0.92f, 0.78f, 1.12f),
+                new FillPlan("FingerGroundcover", 120, new[] { "R70SRC_011", "R70SRC_014", "R70SRC_017", "R70SRC_020", "R70SRC_023", "R70SRC_026", "R70SRC_029" }, 0.94f, 0f, 0f, 36.0f, 0.80f, 0.74f, 1.06f),
+                new FillPlan("FingerBush",       140, new[] { "R70SRC_003", "R70SRC_004", "R70SRC_005", "R70SRC_006" }, 1.30f, 0f, 0f, 31.0f, 0.88f, 0.76f, 1.14f),
+                new FillPlan("FingerUnderstory", 110, new[] { "R70SRC_159", "R70SRC_160", "R70SRC_161", "R70SRC_162", "R70SRC_163", "R70SRC_164", "R70SRC_165", "R70SRC_166" }, 1.62f, 0f, 0f, 28.0f, 0.92f, 0.74f, 1.08f),
+                new FillPlan("FingerSmallTree",   40, new[] { "R70SRC_118", "R70SRC_137", "R70SRC_149", "R70SRC_154" }, 3.10f, 0f, 0f, 22.0f, 0.92f, 0.78f, 1.12f),
                 new FillPlan("FingerMediumTree",  10, new[] { "R70SRC_106", "R70SRC_109", "R70SRC_112", "R70SRC_115", "R70SRC_123", "R70SRC_129" }, 4.40f, 0f, 0f, 16.0f, 0.84f, 0.68f, 0.96f),
             };
 
@@ -943,15 +988,18 @@ namespace ThisWillFloat.EditorTools
             if (albedo == null || !albedo.isReadable)
                 throw new InvalidOperationException("Readable R70 albedo is required for lower shelf gap fill");
 
-            // These pockets occupy the broad green shelf that remains exposed in
-            // the rear/right views. No tree category is used: the lower terrain
-            // gains layered life without rebuilding a continuous canopy ring.
+            // These unequal pockets occupy broad green shelves and the clearings
+            // cut into the original woody canopy arc. They use mostly bushes and
+            // understory, so the terrain remains planted without reconstructing
+            // the circular ring with another line of tall crowns.
             Vector2[] centers =
             {
                 new Vector2(58f, 12f),
                 new Vector2(46f, 40f),
                 new Vector2(65f, -13f),
                 new Vector2(17f, -65f),
+                new Vector2(-48f, 36f),
+                new Vector2(-25f, -58f),
             };
             Vector2[] extents =
             {
@@ -959,13 +1007,15 @@ namespace ThisWillFloat.EditorTools
                 new Vector2(12f, 11f),
                 new Vector2(10f, 15f),
                 new Vector2(14f, 9f),
+                new Vector2(13f, 10f),
+                new Vector2(12f, 13f),
             };
             var plans = new[]
             {
-                new FillPlan("GapGroundcover",  70, new[] { "R70SRC_011", "R70SRC_014", "R70SRC_017", "R70SRC_020", "R70SRC_023", "R70SRC_026", "R70SRC_029" }, 0.94f, 0f, 0f, 15f, 0.80f, 0.72f, 0.96f),
-                new FillPlan("GapBush",        120, new[] { "R70SRC_003", "R70SRC_004", "R70SRC_005", "R70SRC_006" }, 1.18f, 0f, 0f, 14f, 0.88f, 0.74f, 1.10f),
-                new FillPlan("GapUnderstory",  150, new[] { "R70SRC_159", "R70SRC_160", "R70SRC_161", "R70SRC_162", "R70SRC_163", "R70SRC_164", "R70SRC_165", "R70SRC_166" }, 1.38f, 0f, 0f, 13f, 0.92f, 0.74f, 1.08f),
-                new FillPlan("GapSmallTree",    80, new[] { "R70SRC_118", "R70SRC_137", "R70SRC_149", "R70SRC_154" }, 2.30f, 0f, 0f, 11f, 0.92f, 0.72f, 0.96f),
+                new FillPlan("GapGroundcover",  30, new[] { "R70SRC_011", "R70SRC_014", "R70SRC_017", "R70SRC_020", "R70SRC_023", "R70SRC_026", "R70SRC_029" }, 1.02f, 0f, 0f, 15f, 0.76f, 0.70f, 0.92f),
+                new FillPlan("GapBush",        180, new[] { "R70SRC_003", "R70SRC_004", "R70SRC_005", "R70SRC_006" }, 1.12f, 0f, 0f, 14f, 0.88f, 0.86f, 1.28f),
+                new FillPlan("GapUnderstory",  120, new[] { "R70SRC_159", "R70SRC_160", "R70SRC_161", "R70SRC_162", "R70SRC_163", "R70SRC_164", "R70SRC_165", "R70SRC_166" }, 1.34f, 0f, 0f, 13f, 0.92f, 0.80f, 1.18f),
+                new FillPlan("GapSmallTree",    90, new[] { "R70SRC_118", "R70SRC_137", "R70SRC_149", "R70SRC_154" }, 2.24f, 0f, 0f, 11f, 0.92f, 0.82f, 1.12f),
             };
 
             var random = new System.Random(71017);
@@ -1013,6 +1063,185 @@ namespace ThisWillFloat.EditorTools
                 }
                 if (created < plan.count)
                     throw new InvalidOperationException($"Only created {created}/{plan.count} lower shelf gap instances for {plan.label}");
+            }
+            return total;
+        }
+
+        private static int BuildRearLowerCommunityFill(
+            Transform parent,
+            MeshCollider terrainCollider,
+            Dictionary<string, List<Placement>> templatesBySource,
+            Dictionary<string, Mesh> prototypes,
+            Dictionary<string, Transform> transforms,
+            Dictionary<string, Material> materials)
+        {
+            Texture2D albedo = AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_Albedo.png");
+            if (albedo == null || !albedo.isReadable)
+                throw new InvalidOperationException("Readable R70 albedo is required for rear lower community fill");
+
+            // The rear gameplay view has one broad lower green shelf that reads
+            // unfinished. Three overlapping, unequal pockets create a single
+            // asymmetric community with side bulges rather than a new contour
+            // band. Perlin rejection leaves small drainage openings inside it.
+            Vector2[] centers =
+            {
+                new Vector2(39f, -48f),
+                new Vector2(56f, -28f),
+                new Vector2(12f, -63f),
+            };
+            Vector2[] extents =
+            {
+                new Vector2(19f, 14f),
+                new Vector2(14f, 17f),
+                new Vector2(18f, 11f),
+            };
+            var plans = new[]
+            {
+                new FillPlan("RearCommunityBush",       120, new[] { "R70SRC_003", "R70SRC_004", "R70SRC_005", "R70SRC_006" }, 1.16f, 0f, 0f, 14.0f, 0.88f, 0.88f, 1.30f),
+                new FillPlan("RearCommunityUnderstory",  90, new[] { "R70SRC_159", "R70SRC_160", "R70SRC_161", "R70SRC_162", "R70SRC_163", "R70SRC_164", "R70SRC_165", "R70SRC_166" }, 1.46f, 0f, 0f, 13.0f, 0.92f, 0.82f, 1.20f),
+                new FillPlan("RearCommunitySmallTree",   70, new[] { "R70SRC_118", "R70SRC_137", "R70SRC_149", "R70SRC_154" }, 2.45f, 0f, 0f, 11.0f, 0.92f, 0.80f, 1.10f),
+                new FillPlan("RearCommunityMediumTree",  20, new[] { "R70SRC_106", "R70SRC_109", "R70SRC_112", "R70SRC_115", "R70SRC_123", "R70SRC_129" }, 3.85f, 0f, 0f, 9.5f, 0.86f, 0.64f, 0.86f),
+            };
+
+            var random = new System.Random(71243);
+            int total = 0;
+            foreach (FillPlan plan in plans)
+            {
+                var positions = new List<Vector3>();
+                string[] validSources = plan.sources.Where(templatesBySource.ContainsKey).ToArray();
+                int created = 0;
+                int attempts = 0;
+                while (created < plan.count && attempts++ < plan.count * 220)
+                {
+                    int pocket = random.Next(centers.Length);
+                    float angle = (float)random.NextDouble() * Mathf.PI * 2f;
+                    float radial = Mathf.Sqrt((float)random.NextDouble());
+                    Vector2 xz = centers[pocket] + new Vector2(
+                        Mathf.Cos(angle) * extents[pocket].x * radial,
+                        Mathf.Sin(angle) * extents[pocket].y * radial);
+
+                    float breakup = Mathf.PerlinNoise(xz.x * 0.075f + 5.2f, xz.y * 0.075f + 9.7f);
+                    if (breakup < 0.30f) continue;
+
+                    Vector3 rayOrigin = new Vector3(xz.x, 120f, xz.y);
+                    if (!terrainCollider.Raycast(new Ray(rayOrigin, Vector3.down), out RaycastHit hit, 220f)) continue;
+                    float minimumNormalY = plan.label.Contains("Tree", StringComparison.Ordinal) ? 0.54f : 0.40f;
+                    if (hit.point.y > plan.maxHeight || hit.normal.y < minimumNormalY) continue;
+
+                    Color terrainColor = albedo.GetPixelBilinear(hit.textureCoord.x, hit.textureCoord.y);
+                    bool isGreen = terrainColor.g > terrainColor.r * 1.015f &&
+                                   terrainColor.g > terrainColor.b * 1.06f;
+                    if (!isGreen) continue;
+
+                    Vector3 candidate = SurfaceContactPosition(plan.label, hit);
+                    if (positions.Any(position => HorizontalDistance(position, candidate) < plan.minSpacing)) continue;
+
+                    string source = validSources[random.Next(validSources.Length)];
+                    Placement template = templatesBySource[source][random.Next(templatesBySource[source].Count)];
+                    Transform templateTransform = transforms[template.name];
+                    float uniformScale = Mathf.Lerp(plan.minScale, plan.maxScale, (float)random.NextDouble());
+                    Vector3 scale = templateTransform.localScale * uniformScale;
+                    scale.y *= plan.verticalScale;
+                    Quaternion rotation = CreateSurfaceAwareRotation(
+                        plan.label, hit.normal, (float)random.NextDouble() * 360f,
+                        templateTransform.localRotation);
+                    CreateVegetationInstance(parent, $"R70_REAR_COMMUNITY_{pocket + 1}_{plan.label}_{created + 1:000}",
+                        prototypes[source], template, candidate, rotation, scale, materials);
+                    positions.Add(candidate);
+                    created++;
+                    total++;
+                }
+                if (created < plan.count)
+                    throw new InvalidOperationException($"Only created {created}/{plan.count} rear lower community instances for {plan.label}");
+            }
+            return total;
+        }
+
+        private static int BuildRightOpenSlopeUnderstoryFill(
+            Transform parent,
+            MeshCollider terrainCollider,
+            Dictionary<string, List<Placement>> templatesBySource,
+            Dictionary<string, Mesh> prototypes,
+            Dictionary<string, Transform> transforms,
+            Dictionary<string, Material> materials)
+        {
+            Texture2D albedo = AssetDatabase.LoadAssetAtPath<Texture2D>(Source + "/Textures/R70_Volcano_Albedo.png");
+            if (albedo == null || !albedo.isReadable)
+                throw new InvalidOperationException("Readable R70 albedo is required for right open-slope understory fill");
+
+            // Keep the +20 degree canopy corridor visibly open so the top view
+            // cannot close into a ring, but remove the unfinished bare-green-
+            // plate read with low ecological layers. Only a few small trees are
+            // allowed; bushes and understory carry the visual coverage.
+            Vector2[] centers =
+            {
+                new Vector2(58f, 17f),
+                new Vector2(47f, 34f),
+                new Vector2(67f, 3f),
+            };
+            Vector2[] extents =
+            {
+                new Vector2(16f, 12f),
+                new Vector2(14f, 13f),
+                new Vector2(11f, 17f),
+            };
+            var plans = new[]
+            {
+                new FillPlan("RightSlopeGroundcover",  20, new[] { "R70SRC_011", "R70SRC_014", "R70SRC_017", "R70SRC_020", "R70SRC_023", "R70SRC_026", "R70SRC_029" }, 1.10f, 0f, 0f, 15.0f, 0.76f, 0.72f, 0.96f),
+                new FillPlan("RightSlopeBush",        120, new[] { "R70SRC_003", "R70SRC_004", "R70SRC_005", "R70SRC_006" }, 1.08f, 0f, 0f, 14.0f, 0.88f, 0.92f, 1.34f),
+                new FillPlan("RightSlopeUnderstory",   90, new[] { "R70SRC_159", "R70SRC_160", "R70SRC_161", "R70SRC_162", "R70SRC_163", "R70SRC_164", "R70SRC_165", "R70SRC_166" }, 1.34f, 0f, 0f, 13.0f, 0.92f, 0.84f, 1.22f),
+                new FillPlan("RightSlopeSmallTree",     20, new[] { "R70SRC_118", "R70SRC_137", "R70SRC_149", "R70SRC_154" }, 2.75f, 0f, 0f, 10.5f, 0.92f, 0.78f, 1.04f),
+            };
+
+            var random = new System.Random(71429);
+            int total = 0;
+            foreach (FillPlan plan in plans)
+            {
+                var positions = new List<Vector3>();
+                string[] validSources = plan.sources.Where(templatesBySource.ContainsKey).ToArray();
+                int created = 0;
+                int attempts = 0;
+                while (created < plan.count && attempts++ < plan.count * 220)
+                {
+                    int pocket = random.Next(centers.Length);
+                    float angle = (float)random.NextDouble() * Mathf.PI * 2f;
+                    float radial = Mathf.Sqrt((float)random.NextDouble());
+                    Vector2 xz = centers[pocket] + new Vector2(
+                        Mathf.Cos(angle) * extents[pocket].x * radial,
+                        Mathf.Sin(angle) * extents[pocket].y * radial);
+                    float breakup = Mathf.PerlinNoise(xz.x * 0.082f + 2.4f, xz.y * 0.082f + 6.8f);
+                    if (breakup < 0.28f) continue;
+
+                    Vector3 rayOrigin = new Vector3(xz.x, 120f, xz.y);
+                    if (!terrainCollider.Raycast(new Ray(rayOrigin, Vector3.down), out RaycastHit hit, 220f)) continue;
+                    float minimumNormalY = plan.label.Contains("Tree", StringComparison.Ordinal) ? 0.56f : 0.40f;
+                    if (hit.point.y > plan.maxHeight || hit.normal.y < minimumNormalY) continue;
+
+                    Color terrainColor = albedo.GetPixelBilinear(hit.textureCoord.x, hit.textureCoord.y);
+                    bool isGreen = terrainColor.g > terrainColor.r * 1.015f &&
+                                   terrainColor.g > terrainColor.b * 1.06f;
+                    if (!isGreen) continue;
+
+                    Vector3 candidate = SurfaceContactPosition(plan.label, hit);
+                    if (positions.Any(position => HorizontalDistance(position, candidate) < plan.minSpacing)) continue;
+
+                    string source = validSources[random.Next(validSources.Length)];
+                    Placement template = templatesBySource[source][random.Next(templatesBySource[source].Count)];
+                    Transform templateTransform = transforms[template.name];
+                    float uniformScale = Mathf.Lerp(plan.minScale, plan.maxScale, (float)random.NextDouble());
+                    Vector3 scale = templateTransform.localScale * uniformScale;
+                    scale.y *= plan.verticalScale;
+                    Quaternion rotation = CreateSurfaceAwareRotation(
+                        plan.label, hit.normal, (float)random.NextDouble() * 360f,
+                        templateTransform.localRotation);
+                    CreateVegetationInstance(parent, $"R70_RIGHT_OPEN_SLOPE_{pocket + 1}_{plan.label}_{created + 1:000}",
+                        prototypes[source], template, candidate, rotation, scale, materials);
+                    positions.Add(candidate);
+                    created++;
+                    total++;
+                }
+                if (created < plan.count)
+                    throw new InvalidOperationException($"Only created {created}/{plan.count} right open-slope instances for {plan.label}");
             }
             return total;
         }
