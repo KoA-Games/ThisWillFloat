@@ -210,7 +210,16 @@ namespace ThisWillFloat.EditorTools
                     volcanoMaterial.GetFloat("_AshStrength") < 0.4f)
                     throw new InvalidOperationException("R70 volcano layered material calibration is incomplete");
 
-                Debug.Log($"R70_UNITY_MIGRATION_VALIDATION_PASS scene={scene.path} renderers={renderers} meshFilters={meshFilters} mixedFill={mixedFillCount} addedTrees={addedTrees.Length} fallenTrees={fallenTreeCount} upperVegetation={addedUpperVegetation} upperTrees={addedUpperTrees} fingerInstances={fingerCount} lowerGapFill={lowerGapFillCount} rearCommunity={rearCommunityCount} rightOpenSlope={rightOpenSlopeCount} upperRockWoody={upperRockWoody} sparseWoodyBins={sparseWoodyBins} denseWoodyBins={denseWoodyBins} woodyBinAverage={averageWoodyPerBin:F2} minTreeHeightRatio={minimumTreeHeightRatio:F3} maxTreeBaseGapRatio={maximumTreeBaseGapRatio:F3} vegetationShadowCasters={vegetationShadowCasters} shadowDistance={shadowDistance} shadowResolution={shadowResolution} cascades={cascadeCount} normalMaxSize={normalImporter.maxTextureSize} ashLayer=enabled");
+                Transform shoreline = root.transform.Find("Island_Shoreline");
+                MeshRenderer dryBeach = shoreline?.Find("R70_DrySandBeach")?.GetComponent<MeshRenderer>();
+                MeshRenderer wetShore = shoreline?.Find("R70_WetSandShore")?.GetComponent<MeshRenderer>();
+                if (shoreline == null || dryBeach == null || wetShore == null ||
+                    dryBeach.GetComponent<MeshFilter>()?.sharedMesh == null ||
+                    wetShore.GetComponent<MeshFilter>()?.sharedMesh == null ||
+                    wetShore.bounds.extents.x < 86f || dryBeach.sharedMaterial == null || wetShore.sharedMaterial == null)
+                    throw new InvalidOperationException("Irregular Unity shoreline composition is incomplete");
+
+                Debug.Log($"R70_UNITY_MIGRATION_VALIDATION_PASS scene={scene.path} renderers={renderers} meshFilters={meshFilters} mixedFill={mixedFillCount} addedTrees={addedTrees.Length} fallenTrees={fallenTreeCount} upperVegetation={addedUpperVegetation} upperTrees={addedUpperTrees} fingerInstances={fingerCount} lowerGapFill={lowerGapFillCount} rearCommunity={rearCommunityCount} rightOpenSlope={rightOpenSlopeCount} upperRockWoody={upperRockWoody} sparseWoodyBins={sparseWoodyBins} denseWoodyBins={denseWoodyBins} woodyBinAverage={averageWoodyPerBin:F2} minTreeHeightRatio={minimumTreeHeightRatio:F3} maxTreeBaseGapRatio={maximumTreeBaseGapRatio:F3} vegetationShadowCasters={vegetationShadowCasters} shoreline=dry+wet shadowDistance={shadowDistance} shadowResolution={shadowResolution} cascades={cascadeCount} normalMaxSize={normalImporter.maxTextureSize} ashLayer=enabled");
             }
             catch (Exception exception)
             {
@@ -350,6 +359,10 @@ namespace ThisWillFloat.EditorTools
             QualitySettings.renderPipeline = pipeline;
 
             Material volcanoMaterial = CreateVolcanoMaterial();
+            Material drySandMaterial = CreateShoreMaterial(
+                "M_R70_DrySand", new Color(0.48f, 0.42f, 0.31f, 1f), 0.10f);
+            Material wetSandMaterial = CreateShoreMaterial(
+                "M_R70_WetSand", new Color(0.31f, 0.28f, 0.22f, 1f), 0.24f);
             Dictionary<string, Material> vegetationMaterials = CreateVegetationMaterials();
 
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -360,6 +373,7 @@ namespace ThisWillFloat.EditorTools
             renderProfile.ApplyProfile();
 
             BuildVolcano(root.transform, volcanoMaterial);
+            BuildIslandShoreline(root.transform, drySandMaterial, wetSandMaterial);
             BuildVegetation(root.transform, vegetationMaterials);
             BuildReviewEnvironment(root.transform);
 
@@ -501,6 +515,26 @@ namespace ThisWillFloat.EditorTools
             return material;
         }
 
+        private static Material CreateShoreMaterial(string materialName, Color color, float smoothness)
+        {
+            Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+            if (shader == null) throw new InvalidOperationException("URP Lit shader is unavailable for shoreline material");
+            string path = Generated + "/Materials/" + materialName + ".mat";
+            Material material = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (material == null)
+            {
+                material = new Material(shader) { name = materialName };
+                AssetDatabase.CreateAsset(material, path);
+            }
+            else material.shader = shader;
+            material.SetColor("_BaseColor", color);
+            material.SetFloat("_Metallic", 0f);
+            material.SetFloat("_Smoothness", smoothness);
+            material.enableInstancing = true;
+            EditorUtility.SetDirty(material);
+            return material;
+        }
+
         private static Dictionary<string, Material> CreateVegetationMaterials()
         {
             MaterialSet set = JsonUtility.FromJson<MaterialSet>(File.ReadAllText(ToDiskPath(MaterialJson)));
@@ -555,6 +589,120 @@ namespace ThisWillFloat.EditorTools
                 renderer.shadowCastingMode = ShadowCastingMode.On;
                 renderer.receiveShadows = true;
             }
+        }
+
+        private static void BuildIslandShoreline(Transform parent, Material drySand, Material wetSand)
+        {
+            GameObject shoreline = new GameObject("Island_Shoreline");
+            shoreline.transform.SetParent(parent, false);
+            shoreline.isStatic = true;
+
+            CreateShoreRing(
+                shoreline.transform,
+                "R70_DrySandBeach",
+                Generated + "/R70_DrySandBeach.asset",
+                68.0f, 84.0f, 0.10f, 0.17f, 128, 5,
+                0.10f, 0.35f, drySand);
+            CreateShoreRing(
+                shoreline.transform,
+                "R70_WetSandShore",
+                Generated + "/R70_WetSandShore.asset",
+                76.0f, 87.0f, 0.10f, 0.10f, 128, 3,
+                0.01f, 1.73f, wetSand);
+        }
+
+        private static void CreateShoreRing(
+            Transform parent,
+            string objectName,
+            string meshPath,
+            float innerRadius,
+            float outerRadius,
+            float innerHeight,
+            float outerHeight,
+            int segments,
+            int radialSteps,
+            float crownHeight,
+            float phase,
+            Material material)
+        {
+            Mesh mesh = AssetDatabase.LoadAssetAtPath<Mesh>(meshPath);
+            bool newAsset = mesh == null;
+            if (newAsset) mesh = new Mesh { name = objectName + "_Mesh" };
+            else mesh.Clear();
+
+            var vertices = new Vector3[(segments + 1) * (radialSteps + 1)];
+            var uv = new Vector2[vertices.Length];
+            var triangles = new int[segments * radialSteps * 6];
+            int vertex = 0;
+            for (int segment = 0; segment <= segments; segment++)
+            {
+                float normalizedAngle = segment / (float)segments;
+                float angle = normalizedAngle * Mathf.PI * 2f;
+                float nominalWidth = outerRadius - innerRadius;
+                float irregularScale = Mathf.Clamp(nominalWidth * 0.22f, 1.2f, 4.0f);
+                float innerBreakup = irregularScale * (
+                    Mathf.Sin(angle * 3f + phase) * 0.75f +
+                    Mathf.Sin(angle * 7f - phase * 0.7f) * 0.35f +
+                    Mathf.Sin(angle * 13f + 0.9f) * 0.15f);
+                float widthPulse = 0.58f + 0.42f *
+                    (0.5f + 0.5f * Mathf.Sin(angle * 2f + phase * 1.3f));
+                float outerBreakup = irregularScale * (
+                    Mathf.Sin(angle * 5f - phase * 0.5f) * 0.48f +
+                    Mathf.Sin(angle * 9f + phase) * 0.24f +
+                    Mathf.Sin(angle * 15f - 0.4f) * 0.10f);
+                float inner = innerRadius + innerBreakup;
+                float outer = inner + nominalWidth * widthPulse + outerBreakup;
+
+                for (int radial = 0; radial <= radialSteps; radial++)
+                {
+                    float t = radial / (float)radialSteps;
+                    float radius = Mathf.Lerp(inner, outer, t);
+                    float crown = Mathf.Sin(t * Mathf.PI) * crownHeight;
+                    float micro = Mathf.Sin(angle * 6f + t * 4.1f + phase) * 0.025f;
+                    float height = Mathf.Lerp(innerHeight, outerHeight, t) + crown + micro;
+                    vertices[vertex] = new Vector3(Mathf.Cos(angle) * radius, height, Mathf.Sin(angle) * radius);
+                    uv[vertex] = new Vector2(normalizedAngle * 4f, t);
+                    vertex++;
+                }
+            }
+
+            int triangle = 0;
+            int stride = radialSteps + 1;
+            for (int segment = 0; segment < segments; segment++)
+            for (int radial = 0; radial < radialSteps; radial++)
+            {
+                int a = segment * stride + radial;
+                int b = a + stride;
+                int c = b + 1;
+                int d = a + 1;
+                triangles[triangle++] = a;
+                triangles[triangle++] = b;
+                triangles[triangle++] = c;
+                triangles[triangle++] = a;
+                triangles[triangle++] = c;
+                triangles[triangle++] = d;
+            }
+
+            mesh.vertices = vertices;
+            mesh.uv = uv;
+            mesh.triangles = triangles;
+            mesh.RecalculateNormals();
+            mesh.RecalculateTangents();
+            mesh.RecalculateBounds();
+            if (newAsset) AssetDatabase.CreateAsset(mesh, meshPath);
+            else EditorUtility.SetDirty(mesh);
+
+            GameObject ring = new GameObject(objectName);
+            ring.transform.SetParent(parent, false);
+            ring.isStatic = true;
+            MeshFilter filter = ring.AddComponent<MeshFilter>();
+            filter.sharedMesh = mesh;
+            MeshRenderer renderer = ring.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = material;
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.receiveShadows = true;
+            MeshCollider collider = ring.AddComponent<MeshCollider>();
+            collider.sharedMesh = mesh;
         }
 
         private static void BuildVegetation(Transform parent, Dictionary<string, Material> materials)
